@@ -14,6 +14,14 @@
 
 ---
 
+## 🎬 Demo
+
+[![Watch the Demo](https://img.youtube.com/vi/1aPzcJbCsUFHJBPcuQM3xE6G7c36irWtJ/0.jpg)](https://drive.google.com/file/d/1aPzcJbCsUFHJBPcuQM3xE6G7c36irWtJ/view?usp=sharing)
+
+👉 [Click here to watch the full demo video](https://drive.google.com/file/d/1aPzcJbCsUFHJBPcuQM3xE6G7c36irWtJ/view?usp=sharing)
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites
