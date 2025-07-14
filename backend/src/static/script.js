@@ -604,6 +604,20 @@ async function loadDashboardData() {
         displayMyItems(items);
         displayMySwaps(swaps);
         
+        // Load sustainability impact
+        const impactRes = await fetch('/api/sustainability-impact', { credentials: 'include' });
+        if (impactRes.ok) {
+            const impact = await impactRes.json();
+            document.getElementById('sustainability-impact').innerHTML = `
+              <div class="impact-summary">
+                <h3>Your Sustainability Impact</h3>
+                <p><strong>Items Swapped:</strong> ${impact.items_swapped}</p>
+                <p><strong>CO₂ Saved:</strong> ${impact.co2_saved} kg</p>
+                <p><strong>Water Saved:</strong> ${impact.water_saved} L</p>
+                <div class="impact-message">${impact.summary}</div>
+              </div>
+            `;
+        }
     } catch (error) {
         console.error('Failed to load dashboard data:', error);
     }

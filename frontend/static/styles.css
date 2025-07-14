@@ -1060,3 +1060,22 @@ body {
     }
 }
 
+/* Sustainability Impact Summary */
+.impact-summary {
+  background: #e8f5e9;
+  border-radius: 14px;
+  padding: 24px;
+  margin: 24px 0;
+  color: #256029;
+  box-shadow: 0 2px 8px rgba(39,174,96,0.08);
+}
+.impact-summary h3 {
+  margin-top: 0;
+  color: #27ae60;
+}
+.impact-message {
+  margin-top: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
