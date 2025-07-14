@@ -580,30 +580,49 @@ function handleCategoryFilter(e) {
 // Dashboard functions
 async function loadDashboardData() {
     if (!currentUser) return;
-    
     try {
         // Load user's items
         const itemsResponse = await fetch(`${API_BASE}/my-items`, {
             credentials: 'include'
         });
         const items = await itemsResponse.json();
-        
+
         // Load user's swaps
         const swapsResponse = await fetch(`${API_BASE}/my-swaps`, {
             credentials: 'include'
         });
         const swaps = await swapsResponse.json();
-        
+
+        // Count only accepted swaps where the user is requester or owner
+        const completedSwaps = [
+            ...(swaps.sent_swaps || []),
+            ...(swaps.received_swaps || [])
+        ].filter(swap => swap.status === 'accepted').length;
+
         // Update stats
         document.getElementById('user-points-display').textContent = currentUser.points;
         document.getElementById('user-items-count').textContent = items.length;
-        document.getElementById('user-swaps-count').textContent = 
-            (swaps.sent_swaps?.length || 0) + (swaps.received_swaps?.length || 0);
-        
+        document.getElementById('user-swaps-count').textContent = completedSwaps;
+
         // Display items
         displayMyItems(items);
         displayMySwaps(swaps);
-        
+
+        // Load sustainability impact, but use completedSwaps for Items Swapped
+        const impactRes = await fetch('/api/sustainability-impact', { credentials: 'include' });
+        if (impactRes.ok) {
+            const impact = await impactRes.json();
+            // Overwrite items_swapped with completedSwaps for consistency
+            document.getElementById('sustainability-impact').innerHTML = `
+              <div class="impact-summary">
+                <h3>Your Sustainability Impact</h3>
+                <p><strong>Items Swapped:</strong> ${completedSwaps}</p>
+                <p><strong>CO₂ Saved:</strong> ${completedSwaps * 5} kg</p>
+                <p><strong>Water Saved:</strong> ${completedSwaps * 2000} L</p>
+                <div class="impact-message">${impact.summary}</div>
+              </div>
+            `;
+        }
     } catch (error) {
         console.error('Failed to load dashboard data:', error);
     }
