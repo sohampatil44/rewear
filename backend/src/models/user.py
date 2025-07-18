@@ -12,6 +12,7 @@ class User(db.Model):
     points = db.Column(db.Integer, default=100)  # Starting points for new users
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    avatar = db.Column(db.String(255))  # URL or path to profile avatar
     
     # Relationships
     items = db.relationship('Item', backref='owner', lazy=True, cascade='all, delete-orphan')
@@ -34,7 +35,8 @@ class User(db.Model):
             'email': self.email,
             'points': self.points,
             'is_admin': self.is_admin,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'avatar': self.avatar
         }
 
 class Item(db.Model):
@@ -113,4 +115,22 @@ class Swap(db.Model):
             'requester_username': self.requester.username if self.requester else None,
             'owner_username': self.owner_user.username if self.owner_user else None
         }
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'message': self.message,
+            'is_read': self.is_read,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+User.notifications = db.relationship('Notification', backref='user', lazy=True, cascade='all, delete-orphan')
 

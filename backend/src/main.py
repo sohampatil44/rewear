@@ -13,7 +13,7 @@ from src.routes.swaps import swaps_bp
 from src.routes.admin import admin_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
-app.config['SECRET_KEY'] = 'rewear_secret_key_2024_clothing_exchange'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
 
 # Enable CORS for all routes
 CORS(app, supports_credentials=True)

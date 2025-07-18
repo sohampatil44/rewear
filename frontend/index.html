@@ -21,6 +21,7 @@
                 <a href="#" class="nav-link" onclick="showPage('browse')">Browse</a>
                 <a href="#" class="nav-link" onclick="showPage('add-item')" id="add-item-link" style="display: none;">Add Item</a>
                 <a href="#" class="nav-link" onclick="showPage('dashboard')" id="dashboard-link" style="display: none;">Dashboard</a>
+                <a href="#" class="nav-link" onclick="showPage('profile')" id="profile-link" style="display: none;">Profile</a>
                 <a href="#" class="nav-link" onclick="showPage('admin')" id="admin-link" style="display: none;">Admin</a>
             </div>
             <div class="nav-auth">
@@ -31,6 +32,10 @@
                 <div id="user-menu" style="display: none;">
                     <span id="user-points" class="points-badge"></span>
                     <span id="username-display"></span>
+                    <button id="notifications-bell" class="btn btn-icon" style="margin-right: 10px; display: none;" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span id="notifications-badge" class="notifications-badge" style="display:none;"></span>
+                    </button>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
                 </div>
             </div>
@@ -277,6 +282,13 @@
     <div id="dashboard-page" class="page">
         <div class="container">
             <div class="dashboard-header">
+                <div class="avatar-section" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                    <img id="user-avatar" src="" alt="Profile Avatar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #e8e8ed; margin-bottom: 10px;">
+                    <form id="avatar-upload-form" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                        <input type="file" id="avatar-input" name="avatar" accept="image/*" style="margin-bottom: 4px;">
+                        <button type="submit" class="btn btn-outline btn-small">Upload Avatar</button>
+                    </form>
+                </div>
                 <h1>My Dashboard</h1>
                 <div class="user-stats">
                     <div class="stat-card">
@@ -320,6 +332,23 @@
                             <!-- Sent swap requests will be loaded here -->
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile-page" class="page">
+        <div class="container">
+            <div class="profile-header" style="display: flex; flex-direction: column; align-items: center; margin-top: 40px;">
+                <img id="profile-avatar" src="" alt="Profile Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; background: #e8e8ed; margin-bottom: 16px;">
+                <form id="profile-avatar-upload-form" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px;">
+                    <input type="file" id="profile-avatar-input" name="avatar" accept="image/*" style="margin-bottom: 4px;">
+                    <button type="submit" class="btn btn-outline btn-small">Upload Avatar</button>
+                </form>
+                <div class="profile-info" style="text-align: center;">
+                    <h2 id="profile-username"></h2>
+                    <p id="profile-email" style="color: #6e6e73;"></p>
                 </div>
             </div>
         </div>
@@ -389,6 +418,39 @@
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
 
+    <!-- AI Chat Widget -->
+    <div id="ai-chat-widget">
+      <button id="ai-chat-toggle" title="Ask ReWear AI Assistant">
+        <i class="fas fa-comment-dots"></i>
+      </button>
+      <div id="ai-chat-window" class="ai-chat-closed">
+        <div class="ai-chat-header">
+          <span>ReWear AI Assistant</span>
+          <button id="ai-chat-close" title="Close">&times;</button>
+        </div>
+        <div id="ai-chat-messages" class="ai-chat-messages">
+          <div class="ai-chat-message ai-chat-message-assistant">
+            <span>Hi! 👋 I’m your ReWear AI assistant. Ask me about sustainable fashion, clothing care, or how to use the platform!</span>
+          </div>
+        </div>
+        <form id="ai-chat-form">
+          <input type="text" id="ai-chat-input" placeholder="Type your question..." autocomplete="off" required />
+          <button type="submit"><i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notifications-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close" onclick="closeModal('notifications-modal')">&times;</span>
+            <h2>Notifications</h2>
+            <div id="notifications-list">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-brand">
@@ -411,7 +473,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="static/script.js"></script>
 </body>
 </html>
 
