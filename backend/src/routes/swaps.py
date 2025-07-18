@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-from src.models.user import User, Item, Swap, db
+from src.models.user import User, Item, Swap, db, Notification
 from datetime import datetime
 
 swaps_bp = Blueprint('swaps', __name__)
@@ -79,6 +79,14 @@ def create_swap():
         db.session.add(swap)
         db.session.commit()
         
+        # Notify item owner
+        notification = Notification(
+            user_id=item.owner_id,
+            message=f"You have a new swap request for '{item.title}'!"
+        )
+        db.session.add(notification)
+        db.session.commit()
+        
         return jsonify({
             'message': 'Swap request created successfully',
             'swap': swap.to_dict()
@@ -138,6 +146,14 @@ def respond_to_swap(swap_id):
         else:  # reject
             swap.status = 'rejected'
         
+        db.session.commit()
+        
+        # Notify requester
+        notification = Notification(
+            user_id=swap.requester_id,
+            message=f"Your swap request for '{swap.item.title}' was {swap.status}."
+        )
+        db.session.add(notification)
         db.session.commit()
         
         return jsonify({

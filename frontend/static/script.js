@@ -13,6 +13,21 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCategories();
     loadFeaturedItems();
     setupEventListeners();
+    // Avatar upload event
+    const avatarForm = document.getElementById('avatar-upload-form');
+    if (avatarForm) {
+        avatarForm.addEventListener('submit', handleAvatarUpload);
+    }
+    // Profile avatar upload event
+    const profileAvatarForm = document.getElementById('profile-avatar-upload-form');
+    if (profileAvatarForm) {
+        profileAvatarForm.addEventListener('submit', handleProfileAvatarUpload);
+    }
+    // Notifications bell event
+    const notificationsBell = document.getElementById('notifications-bell');
+    if (notificationsBell) {
+        notificationsBell.addEventListener('click', openNotificationsModal);
+    }
 });
 
 // Setup event listeners
@@ -221,26 +236,46 @@ function updateAuthUI() {
     const addItemLink = document.getElementById('add-item-link');
     const dashboardLink = document.getElementById('dashboard-link');
     const adminLink = document.getElementById('admin-link');
+    const profileLink = document.getElementById('profile-link');
+    const notificationsBell = document.getElementById('notifications-bell');
     
     if (currentUser) {
         authButtons.style.display = 'none';
         userMenu.style.display = 'flex';
         addItemLink.style.display = 'block';
         dashboardLink.style.display = 'block';
-        
+        profileLink.style.display = 'block';
+        notificationsBell.style.display = 'inline-block';
         document.getElementById('username-display').textContent = currentUser.username;
         document.getElementById('user-points').textContent = `${currentUser.points} pts`;
-        
         if (currentUser.is_admin) {
             adminLink.style.display = 'block';
         }
+        fetchAndShowNotificationsBadge();
     } else {
         authButtons.style.display = 'flex';
         userMenu.style.display = 'none';
         addItemLink.style.display = 'none';
         dashboardLink.style.display = 'none';
+        profileLink.style.display = 'none';
+        notificationsBell.style.display = 'none';
         adminLink.style.display = 'none';
     }
+}
+
+// Profile page logic
+function showProfilePage() {
+    if (!currentUser) return;
+    // Set avatar
+    const avatarImg = document.getElementById('profile-avatar');
+    if (avatarImg && currentUser.avatar) {
+        avatarImg.src = `/${currentUser.avatar}`;
+    } else if (avatarImg) {
+        avatarImg.src = '';
+    }
+    // Set username and email
+    document.getElementById('profile-username').textContent = currentUser.username;
+    document.getElementById('profile-email').textContent = currentUser.email;
 }
 
 // Page navigation
@@ -269,6 +304,11 @@ function showPage(pageName) {
             case 'admin':
                 if (currentUser && currentUser.is_admin) {
                     loadAdminData();
+                }
+                break;
+            case 'profile':
+                if (currentUser) {
+                    showProfilePage();
                 }
                 break;
         }
@@ -580,6 +620,7 @@ function handleCategoryFilter(e) {
 // Dashboard functions
 async function loadDashboardData() {
     if (!currentUser) return;
+    setUserAvatar();
     try {
         // Load user's items
         const itemsResponse = await fetch(`${API_BASE}/my-items`, {
@@ -1100,5 +1141,222 @@ window.onclick = function(event) {
             modal.style.display = 'none';
         }
     });
+}
+
+// AI Chat Widget Logic
+(function() {
+  const chatWidget = document.getElementById('ai-chat-widget');
+  const chatToggle = document.getElementById('ai-chat-toggle');
+  const chatWindow = document.getElementById('ai-chat-window');
+  const chatClose = document.getElementById('ai-chat-close');
+  const chatForm = document.getElementById('ai-chat-form');
+  const chatInput = document.getElementById('ai-chat-input');
+  const chatMessages = document.getElementById('ai-chat-messages');
+
+  function openChat() {
+    chatWindow.classList.remove('ai-chat-closed');
+    chatInput.focus();
+  }
+  function closeChat() {
+    chatWindow.classList.add('ai-chat-closed');
+  }
+  chatToggle.addEventListener('click', openChat);
+  chatClose.addEventListener('click', closeChat);
+
+  chatForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const userMsg = chatInput.value.trim();
+    if (!userMsg) return;
+    addMessage(userMsg, 'user');
+    chatInput.value = '';
+    addMessage('<span class="ai-chat-loading">Thinking...</span>', 'assistant', true);
+    try {
+      const resp = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMsg })
+      });
+      const data = await resp.json();
+      removeLoadingMessage();
+      if (data.response) {
+        addMessage(data.response, 'assistant');
+      } else {
+        addMessage('Sorry, I could not answer that right now.', 'assistant');
+      }
+    } catch (err) {
+      removeLoadingMessage();
+      addMessage('Sorry, something went wrong.', 'assistant');
+    }
+  });
+
+  function addMessage(text, sender, isLoading = false) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'ai-chat-message ai-chat-message-' + (sender === 'user' ? 'user' : 'assistant');
+    if (isLoading) msgDiv.classList.add('ai-chat-loading-msg');
+    msgDiv.innerHTML = '<span>' + text + '</span>';
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  function removeLoadingMessage() {
+    const loadingMsg = chatMessages.querySelector('.ai-chat-loading-msg');
+    if (loadingMsg) loadingMsg.remove();
+  }
+})();
+
+async function handleAvatarUpload(e) {
+    e.preventDefault();
+    if (!currentUser) return;
+    const input = document.getElementById('avatar-input');
+    const file = input.files[0];
+    if (!file) {
+        showToast('Please select an image file.', 'error');
+        return;
+    }
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+        showToast('Please select a valid image file (JPEG, PNG, or GIF).', 'error');
+        return;
+    }
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Image file size must be less than 5MB.', 'error');
+        return;
+    }
+    showLoading();
+    const formData = new FormData();
+    formData.append('avatar', file);
+    try {
+        const response = await fetch(`/api/users/${currentUser.id}/avatar`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        });
+        const data = await response.json();
+        if (response.ok) {
+            showToast('Avatar updated!', 'success');
+            // Update avatar in UI and currentUser
+            currentUser.avatar = data.avatar;
+            setUserAvatar();
+        } else {
+            showToast(data.error || 'Upload failed', 'error');
+        }
+    } catch (error) {
+        showToast('Upload failed. Please try again.', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function handleProfileAvatarUpload(e) {
+    e.preventDefault();
+    if (!currentUser) return;
+    const input = document.getElementById('profile-avatar-input');
+    const file = input.files[0];
+    if (!file) {
+        showToast('Please select an image file.', 'error');
+        return;
+    }
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+        showToast('Please select a valid image file (JPEG, PNG, or GIF).', 'error');
+        return;
+    }
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Image file size must be less than 5MB.', 'error');
+        return;
+    }
+    showLoading();
+    const formData = new FormData();
+    formData.append('avatar', file);
+    try {
+        const response = await fetch(`/api/users/${currentUser.id}/avatar`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        });
+        const data = await response.json();
+        if (response.ok) {
+            showToast('Avatar updated!', 'success');
+            currentUser.avatar = data.avatar;
+            showProfilePage();
+        } else {
+            showToast(data.error || 'Upload failed', 'error');
+        }
+    } catch (error) {
+        showToast('Upload failed. Please try again.', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+function setUserAvatar() {
+    const avatarImg = document.getElementById('user-avatar');
+    if (avatarImg && currentUser && currentUser.avatar) {
+        avatarImg.src = `/${currentUser.avatar}`;
+    } else if (avatarImg) {
+        avatarImg.src = '';
+    }
+}
+
+function openNotificationsModal() {
+    fetchAndShowNotifications();
+    document.getElementById('notifications-modal').style.display = 'block';
+}
+
+async function fetchAndShowNotifications() {
+    try {
+        const res = await fetch('/api/notifications', { credentials: 'include' });
+        const notifications = await res.json();
+        const list = document.getElementById('notifications-list');
+        list.innerHTML = '';
+        if (notifications.length === 0) {
+            list.innerHTML = '<p style="color: #6e6e73; text-align: center;">No notifications</p>';
+            return;
+        }
+        notifications.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'notification-item' + (n.is_read ? '' : ' unread');
+            div.style = 'padding: 10px 0; border-bottom: 1px solid #eee;';
+            div.innerHTML = `
+                <span>${n.message}</span>
+                <br><small style="color: #888;">${new Date(n.created_at).toLocaleString()}</small>
+                ${!n.is_read ? `<button class="btn btn-outline btn-small" style="margin-left:10px;" onclick="markNotificationRead(${n.id}, this)">Mark as read</button>` : ''}
+            `;
+            list.appendChild(div);
+        });
+    } catch (e) {
+        document.getElementById('notifications-list').innerHTML = '<p style="color: red;">Failed to load notifications</p>';
+    }
+}
+
+async function markNotificationRead(id, btn) {
+    try {
+        btn.disabled = true;
+        await fetch(`/api/notifications/${id}/read`, { method: 'POST', credentials: 'include' });
+        fetchAndShowNotifications();
+        fetchAndShowNotificationsBadge();
+    } catch (e) {
+        showToast('Failed to mark as read', 'error');
+    }
+}
+
+async function fetchAndShowNotificationsBadge() {
+    try {
+        const res = await fetch('/api/notifications', { credentials: 'include' });
+        const notifications = await res.json();
+        const unread = notifications.filter(n => !n.is_read).length;
+        const badge = document.getElementById('notifications-badge');
+        if (unread > 0) {
+            badge.textContent = unread;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    } catch (e) {
+        // ignore
+    }
 }
 

@@ -1,10 +1,17 @@
 from flask import Blueprint, jsonify, request, session
-from src.models.user import User, db, Swap
+from src.models.user import User, db, Swap, Notification
 import os
 import requests
 from sqlalchemy import or_
+from werkzeug.utils import secure_filename
 
 user_bp = Blueprint('user', __name__)
+
+AVATAR_UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), '../static/uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @user_bp.route('/users', methods=['GET'])
 def get_users():
@@ -40,6 +47,28 @@ def delete_user(user_id):
     db.session.delete(user)
     db.session.commit()
     return '', 204
+
+@user_bp.route('/users/<int:user_id>/avatar', methods=['POST'])
+def upload_avatar(user_id):
+    if 'user_id' not in session or session['user_id'] != user_id:
+        return jsonify({'error': 'Permission denied'}), 403
+    if 'avatar' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['avatar']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    if file and allowed_file(file.filename):
+        filename = secure_filename(f"user_{user_id}_avatar.{file.filename.rsplit('.', 1)[1].lower()}")
+        save_path = os.path.join(AVATAR_UPLOAD_FOLDER, filename)
+        os.makedirs(AVATAR_UPLOAD_FOLDER, exist_ok=True)
+        file.save(save_path)
+        # Update user avatar path (relative to /static/uploads)
+        user = User.query.get_or_404(user_id)
+        user.avatar = f'static/uploads/{filename}'
+        db.session.commit()
+        return jsonify({'avatar': user.avatar}), 200
+    else:
+        return jsonify({'error': 'Invalid file type'}), 400
 
 def get_gemini_summary(prompt):
     """
@@ -92,3 +121,36 @@ def sustainability_impact():
         "water_saved": water_saved,
         "summary": gemini_response
     })
+
+@user_bp.route('/ai-chat', methods=['POST'])
+def ai_chat():
+    data = request.json
+    user_message = data.get('message', '').strip()
+    if not user_message:
+        return jsonify({'error': 'Message is required.'}), 400
+    # System prompt to keep answers on-topic and friendly
+    system_prompt = (
+        "You are ReWear's friendly AI assistant. Answer questions about sustainable fashion, clothing care, and how to use the ReWear platform. "
+        "If the question is off-topic, politely guide the user back to these topics."
+    )
+    prompt = f"{system_prompt}\nUser: {user_message}\nAssistant:"
+    ai_response = get_gemini_summary(prompt)
+    return jsonify({'response': ai_response})
+
+@user_bp.route('/notifications', methods=['GET'])
+def get_notifications():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Authentication required'}), 401
+    notifications = Notification.query.filter_by(user_id=session['user_id']).order_by(Notification.created_at.desc()).all()
+    return jsonify([n.to_dict() for n in notifications])
+
+@user_bp.route('/notifications/<int:notification_id>/read', methods=['POST'])
+def mark_notification_read(notification_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Authentication required'}), 401
+    notification = Notification.query.get_or_404(notification_id)
+    if notification.user_id != session['user_id']:
+        return jsonify({'error': 'Permission denied'}), 403
+    notification.is_read = True
+    db.session.commit()
+    return jsonify({'success': True})
