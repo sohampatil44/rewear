@@ -1360,3 +1360,23 @@ async function fetchAndShowNotificationsBadge() {
     }
 }
 
+document.getElementById("feedback-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("feedback-name").value;
+    const email = document.getElementById("feedback-email").value;
+    const message = document.getElementById("feedback-message").value;
+
+    // Optionally: Send data to server via fetch() here
+
+    // Show thank you message
+    document.getElementById("feedback-form").reset();
+    document.getElementById("feedback-success").style.display = "block";
+
+    // Hide after 5 seconds
+    setTimeout(() => {
+        document.getElementById("feedback-success").style.display = "none";
+    }, 5000);
+});
+
+
