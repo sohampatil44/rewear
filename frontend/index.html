@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReWear - Community Clothing Exchange</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="static/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -19,6 +19,7 @@
             <div class="nav-menu" id="nav-menu">
                 <a href="#" class="nav-link" onclick="showPage('landing')">Home</a>
                 <a href="#" class="nav-link" onclick="showPage('browse')">Browse</a>
+                <a href="#" class="nav-link" onclick="showPage('feedback')">Feedback</a>
                 <a href="#" class="nav-link" onclick="showPage('add-item')" id="add-item-link" style="display: none;">Add Item</a>
                 <a href="#" class="nav-link" onclick="showPage('dashboard')" id="dashboard-link" style="display: none;">Dashboard</a>
                 <a href="#" class="nav-link" onclick="showPage('profile')" id="profile-link" style="display: none;">Profile</a>
@@ -450,6 +451,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Feedback Page -->
+<div id="feedback-page" class="page">
+    <div class="container">
+        <div class="page-header">
+            <h1>We Value Your Feedback</h1>
+            <p>Let us know how we’re doing or suggest improvements.</p>
+        </div>
+        <form id="feedback-form" class="feedback-form">
+            <div class="form-group">
+                <label for="feedback-name">Your Name</label>
+                <input type="text" id="feedback-name" name="name" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label for="feedback-email">Email</label>
+                <input type="email" id="feedback-email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="feedback-message">Message</label>
+                <textarea id="feedback-message" name="message" rows="5" placeholder="Your message..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </form>
+        <div id="feedback-success" style="display: none; margin-top: 20px; color: green;">Thank you for your feedback!</div>
+    </div>
+</div>
+
 
     <footer class="footer">
         <div class="footer-container">
