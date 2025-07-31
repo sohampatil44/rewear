@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -20,10 +22,14 @@
                 <a href="#" class="nav-link" onclick="showPage('landing')">Home</a>
                 <a href="#" class="nav-link" onclick="showPage('browse')">Browse</a>
                 <a href="#" class="nav-link" onclick="showPage('feedback')">Feedback</a>
-                <a href="#" class="nav-link" onclick="showPage('add-item')" id="add-item-link" style="display: none;">Add Item</a>
-                <a href="#" class="nav-link" onclick="showPage('dashboard')" id="dashboard-link" style="display: none;">Dashboard</a>
-                <a href="#" class="nav-link" onclick="showPage('profile')" id="profile-link" style="display: none;">Profile</a>
-                <a href="#" class="nav-link" onclick="showPage('admin')" id="admin-link" style="display: none;">Admin</a>
+                <a href="#" class="nav-link" onclick="showPage('add-item')" id="add-item-link"
+                    style="display: none;">Add Item</a>
+                <a href="#" class="nav-link" onclick="showPage('dashboard')" id="dashboard-link"
+                    style="display: none;">Dashboard</a>
+                <a href="#" class="nav-link" onclick="showPage('profile')" id="profile-link"
+                    style="display: none;">Profile</a>
+                <a href="#" class="nav-link" onclick="showPage('admin')" id="admin-link"
+                    style="display: none;">Admin</a>
             </div>
             <div class="nav-auth">
                 <div id="auth-buttons">
@@ -33,7 +39,8 @@
                 <div id="user-menu" style="display: none;">
                     <span id="user-points" class="points-badge"></span>
                     <span id="username-display"></span>
-                    <button id="notifications-bell" class="btn btn-icon" style="margin-right: 10px; display: none;" title="Notifications">
+                    <button id="notifications-bell" class="btn btn-icon" style="margin-right: 10px; display: none;"
+                        title="Notifications">
                         <i class="fas fa-bell"></i>
                         <span id="notifications-badge" class="notifications-badge" style="display:none;"></span>
                     </button>
@@ -54,7 +61,8 @@
             <div class="hero-bg"></div>
             <div class="hero-content">
                 <h1>Sustainable Fashion, <span style="color:#007aff;">Together</span></h1>
-                <p>Give your unused clothing a new life. Swap directly with others or use points to find your next favorite piece. Join a community making fashion circular and fun!</p>
+                <p>Give your unused clothing a new life. Swap directly with others or use points to find your next
+                    favorite piece. Join a community making fashion circular and fun!</p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary btn-large" onclick="showPage('browse')">Start Swapping</button>
                     <button class="btn btn-outline btn-large" onclick="showPage('browse')">Browse Items</button>
@@ -67,10 +75,18 @@
             </div>
             <div class="hero-image">
                 <div class="floating-icons">
-                    <img class="floating-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f97b.png" alt="Dress" style="top:18%;left:18%;width:48px;height:48px;" />
-                    <img class="floating-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e5.png" alt="Coat" style="top:32%;left:38%;width:48px;height:48px;" />
-                    <img class="floating-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f456.png" alt="Jeans" style="top:48%;left:58%;width:48px;height:48px;" />
-                    <img class="floating-icon" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f45f.png" alt="Sneaker" style="top:62%;left:78%;width:48px;height:48px;" />
+                    <img class="floating-icon"
+                        src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f97b.png" alt="Dress"
+                        style="top:18%;left:18%;width:48px;height:48px;" />
+                    <img class="floating-icon"
+                        src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9e5.png" alt="Coat"
+                        style="top:32%;left:38%;width:48px;height:48px;" />
+                    <img class="floating-icon"
+                        src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f456.png" alt="Jeans"
+                        style="top:48%;left:58%;width:48px;height:48px;" />
+                    <img class="floating-icon"
+                        src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f45f.png" alt="Sneaker"
+                        style="top:62%;left:78%;width:48px;height:48px;" />
                 </div>
             </div>
         </section>
@@ -283,9 +299,12 @@
     <div id="dashboard-page" class="page">
         <div class="container">
             <div class="dashboard-header">
-                <div class="avatar-section" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
-                    <img id="user-avatar" src="" alt="Profile Avatar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #e8e8ed; margin-bottom: 10px;">
-                    <form id="avatar-upload-form" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                <div class="avatar-section"
+                    style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                    <img id="user-avatar" src="" alt="Profile Avatar"
+                        style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #e8e8ed; margin-bottom: 10px;">
+                    <form id="avatar-upload-form" enctype="multipart/form-data"
+                        style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                         <input type="file" id="avatar-input" name="avatar" accept="image/*" style="margin-bottom: 4px;">
                         <button type="submit" class="btn btn-outline btn-small">Upload Avatar</button>
                     </form>
@@ -341,10 +360,14 @@
     <!-- Profile Page -->
     <div id="profile-page" class="page">
         <div class="container">
-            <div class="profile-header" style="display: flex; flex-direction: column; align-items: center; margin-top: 40px;">
-                <img id="profile-avatar" src="" alt="Profile Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; background: #e8e8ed; margin-bottom: 16px;">
-                <form id="profile-avatar-upload-form" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px;">
-                    <input type="file" id="profile-avatar-input" name="avatar" accept="image/*" style="margin-bottom: 4px;">
+            <div class="profile-header"
+                style="display: flex; flex-direction: column; align-items: center; margin-top: 40px;">
+                <img id="profile-avatar" src="" alt="Profile Avatar"
+                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; background: #e8e8ed; margin-bottom: 16px;">
+                <form id="profile-avatar-upload-form" enctype="multipart/form-data"
+                    style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px;">
+                    <input type="file" id="profile-avatar-input" name="avatar" accept="image/*"
+                        style="margin-bottom: 4px;">
                     <button type="submit" class="btn btn-outline btn-small">Upload Avatar</button>
                 </form>
                 <div class="profile-info" style="text-align: center;">
@@ -361,7 +384,7 @@
             <div class="page-header">
                 <h1>Admin Panel</h1>
             </div>
-            
+
             <div class="admin-stats">
                 <div class="stat-card">
                     <div class="stat-value" id="admin-total-users">0</div>
@@ -421,24 +444,25 @@
 
     <!-- AI Chat Widget -->
     <div id="ai-chat-widget">
-      <button id="ai-chat-toggle" title="Ask ReWear AI Assistant">
-        <i class="fas fa-comment-dots"></i>
-      </button>
-      <div id="ai-chat-window" class="ai-chat-closed">
-        <div class="ai-chat-header">
-          <span>ReWear AI Assistant</span>
-          <button id="ai-chat-close" title="Close">&times;</button>
+        <button id="ai-chat-toggle" title="Ask ReWear AI Assistant">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+        <div id="ai-chat-window" class="ai-chat-closed">
+            <div class="ai-chat-header">
+                <span>ReWear AI Assistant</span>
+                <button id="ai-chat-close" title="Close">&times;</button>
+            </div>
+            <div id="ai-chat-messages" class="ai-chat-messages">
+                <div class="ai-chat-message ai-chat-message-assistant">
+                    <span>Hi! 👋 I’m your ReWear AI assistant. Ask me about sustainable fashion, clothing care, or how
+                        to use the platform!</span>
+                </div>
+            </div>
+            <form id="ai-chat-form">
+                <input type="text" id="ai-chat-input" placeholder="Type your question..." autocomplete="off" required />
+                <button type="submit"><i class="fas fa-paper-plane"></i></button>
+            </form>
         </div>
-        <div id="ai-chat-messages" class="ai-chat-messages">
-          <div class="ai-chat-message ai-chat-message-assistant">
-            <span>Hi! 👋 I’m your ReWear AI assistant. Ask me about sustainable fashion, clothing care, or how to use the platform!</span>
-          </div>
-        </div>
-        <form id="ai-chat-form">
-          <input type="text" id="ai-chat-input" placeholder="Type your question..." autocomplete="off" required />
-          <button type="submit"><i class="fas fa-paper-plane"></i></button>
-        </form>
-      </div>
     </div>
 
     <!-- Notifications Modal -->
@@ -453,55 +477,100 @@
     </div>
 
     <!-- Feedback Page -->
-<div id="feedback-page" class="page">
-    <div class="container">
-        <div class="page-header">
-            <h1>We Value Your Feedback</h1>
-            <p>Let us know how we’re doing or suggest improvements.</p>
+    <div id="feedback-page" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1>We Value Your Feedback</h1>
+                <p>Let us know how we’re doing or suggest improvements.</p>
+            </div>
+            <form id="feedback-form" class="feedback-form">
+                <div class="form-group">
+                    <label for="feedback-name">Your Name</label>
+                    <input type="text" id="feedback-name" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="feedback-email">Email</label>
+                    <input type="email" id="feedback-email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="feedback-message">Message</label>
+                    <textarea id="feedback-message" name="message" rows="5" placeholder="Your message..."
+                        required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+            <div id="feedback-success" style="display: none; margin-top: 20px; color: green;">Thank you for your
+                feedback!</div>
         </div>
-        <form id="feedback-form" class="feedback-form">
-            <div class="form-group">
-                <label for="feedback-name">Your Name</label>
-                <input type="text" id="feedback-name" name="name" placeholder="Enter your name" required>
-            </div>
-            <div class="form-group">
-                <label for="feedback-email">Email</label>
-                <input type="email" id="feedback-email" name="email" placeholder="Enter your email" required>
-            </div>
-            <div class="form-group">
-                <label for="feedback-message">Message</label>
-                <textarea id="feedback-message" name="message" rows="5" placeholder="Your message..." required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Feedback</button>
-        </form>
-        <div id="feedback-success" style="display: none; margin-top: 20px; color: green;">Thank you for your feedback!</div>
     </div>
-</div>
 
 
     <footer class="footer">
         <div class="footer-container">
-            <div class="footer-brand">
-                <i class="fas fa-recycle"></i> ReWear
+
+            <!-- Column 1: About / Brand -->
+            <div class="footer-column">
+                <div class="footer-brand">
+                    <i class="fas fa-recycle"></i> ReWear
+                </div>
+                <p>Fully circular and managed kidswear rental marketplace for parents, brands and retailers.</p>
+                <div class="footer-social">
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+                </div>
             </div>
-            <div class="footer-links">
+
+            <!-- Column 2: Quick Links -->
+            <div class="footer-column">
+                <h4>Explore</h4>
                 <a href="#" onclick="showPage('landing')">Home</a>
                 <a href="#" onclick="showPage('browse')">Browse</a>
                 <a href="#" onclick="showPage('add-item')">Add Item</a>
                 <a href="#" onclick="showPage('dashboard')">Dashboard</a>
             </div>
-            <div class="footer-social">
-                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+
+            <!-- Column 3: Info -->
+            <div class="footer-column">
+                <h4>Info</h4>
+                <a href="#">Terms</a>
+                <a href="#">Returns</a>
+                <a href="#">Shipping</a>
+                <a href="#">Privacy</a>
+                <a href="#">FAQs</a>
+            </div>
+
+            <!-- Column 4: Newsletter Signup -->
+            <div class="footer-column">
+                <div class="footer-signup">
+                    <h4 style="color:#a3cef1;">Sign up here</h4>
+                    <p>Let’s become friends! Join our community to hear about our latest news and offers.</p>
+                    <form class="signup-form">
+                        <input type="email" placeholder="Enter email" />
+                        <button type="submit" class="arrow-icon" title="Subscribe">→</button>
+                    </form>
+                </div>
             </div>
         </div>
+
+        <!-- Bottom Footer Row -->
         <div class="footer-bottom">
-            &copy; 2024 ReWear. All rights reserved.
+            &copy; 2025 ReWear. All rights reserved.
+            <div class="footer-links">
+                <a href="#">About us</a>
+                <a href="#">Sustainability</a>
+                <a href="#">Care Info</a>
+                <a href="#">Contact</a>
+            </div>
+
+            <div class="footer-payments">
+                <img src="/frontend/assets/paymentoption.png" alt="Payment option" height="30" />
+            </div>
         </div>
     </footer>
 
+
     <script src="static/script.js"></script>
 </body>
-</html>
 
+</html>
