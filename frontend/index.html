@@ -555,7 +555,9 @@
 
         <!-- Bottom Footer Row -->
         <div class="footer-bottom">
-            &copy; 2025 ReWear. All rights reserved.
+            &copy; <span id="year"></span>
+            <script>document.getElementById('year').textContent = new Date().getFullYear();</script> ReWear. All rights
+            reserved.
             <div class="footer-links">
                 <a href="#">About us</a>
                 <a href="#">Sustainability</a>
