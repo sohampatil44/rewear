@@ -1,3 +1,3 @@
 venv/
 src/database/app.db 
-backend/.env
+backend/.env.example
