@@ -267,10 +267,25 @@ body {
   color: #5856d6;
   font-weight: 600;
 }
-
+.stat{
+  display: flex;
+  flex-wrap: wrap;
+  height: 6rem;
+  width: 12rem;
+  align-items: center;
+  padding: 0.6rem;
+  transition: width 0.2s ease-in-out,transform 0.2s ease-in-out;
+}
+.stat:hover{
+  background-color: #ffffff94;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transform: translateY(-6px) scale(1.03);
+}
 .hero-stats .stat i {
   margin-right: 8px;
   color: #007aff;
+  align-items: center;
 }
 
 /* Why ReWear section */
