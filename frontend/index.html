@@ -451,6 +451,9 @@
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
 
+    <!-- Scroll to Top Button -->
+    <!-- <button id="scrollToTopBtn" title="Go to top"><b></b></button> -->
+
     <!-- AI Chat Widget -->
     <div id="ai-chat-widget">
         <button id="ai-chat-toggle" title="Ask ReWear AI Assistant">
@@ -580,6 +583,31 @@
         </div>
     </footer>
 
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTopBtn" title="Go to top">↑</button>
+
+    <!-- AI Chat Widget -->
+    <div id="ai-chat-widget">
+        <button id="ai-chat-toggle" title="Ask ReWear AI Assistant">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+        <div id="ai-chat-window" class="ai-chat-closed">
+            <div class="ai-chat-header">
+                <span>ReWear AI Assistant</span>
+                <button id="ai-chat-close" title="Close">&times;</button>
+            </div>
+            <div id="ai-chat-messages" class="ai-chat-messages">
+                <div class="ai-chat-message ai-chat-message-assistant">
+                    <span>Hi! 👋 I’m your ReWear AI assistant. Ask me about sustainable fashion, clothing care, or how
+                        to use the platform!</span>
+                </div>
+            </div>
+            <form id="ai-chat-form">
+                <input type="text" id="ai-chat-input" placeholder="Type your question..." autocomplete="off" required />
+                <button type="submit"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
 
     <script src="static/script.js"></script>
 </body>

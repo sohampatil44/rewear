@@ -1,3 +1,8 @@
+function setupEventListeners() {
+  // Stub function to prevent errors
+  // Add event listeners here if needed in future
+}
+
 // Global state
 let currentUser = null;
 let currentPage = "landing";
@@ -30,38 +35,10 @@ document.addEventListener("DOMContentLoaded", function () {
   if (notificationsBell) {
     notificationsBell.addEventListener("click", openNotificationsModal);
   }
+  // Call scroll-to-top setup here
+  setupScrollToTop();
 });
 
-// Setup event listeners
-function setupEventListeners() {
-  // Forms
-  document.getElementById("login-form").addEventListener("submit", handleLogin);
-  document
-    .getElementById("signup-form")
-    .addEventListener("submit", handleSignup);
-  document
-    .getElementById("add-item-form")
-    .addEventListener("submit", handleAddItem);
-
-  // Search and filters
-  document
-    .getElementById("search-input")
-    .addEventListener("input", debounce(handleSearch, 300));
-  document
-    .getElementById("category-filter")
-    .addEventListener("change", handleCategoryFilter);
-
-  // Mobile menu toggle
-  document
-    .getElementById("nav-toggle")
-    .addEventListener("click", toggleMobileMenu);
-
-  // Image upload
-  const uploadBtn = document.getElementById("upload-image-btn");
-  if (uploadBtn) {
-    uploadBtn.addEventListener("click", handleImageUpload);
-  }
-}
 
 // Image upload function
 async function handleImageUpload() {
@@ -1489,3 +1466,52 @@ document
       document.getElementById("feedback-success").style.display = "none";
     }, 5000);
   });
+
+
+// Scroll-to-Top Button functionality
+function setupScrollToTop() {
+  const scrollBtn = document.getElementById("scrollToTopBtn");
+  
+  if (!scrollBtn) return;
+
+  // Debounced scroll handler for better performance
+  let scrollTimeout;
+  function handleScroll() {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      
+      if (scrollY > 50) {
+        scrollBtn.classList.add('show');
+      } else {
+        scrollBtn.classList.remove('show');
+      }
+    }, 10);
+  }
+
+  // Smooth scroll to top
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  // Add event listeners
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  scrollBtn.addEventListener('click', scrollToTop);
+  
+  // Add keyboard accessibility
+  scrollBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      scrollToTop();
+    }
+  });
+
+  // Set ARIA attributes for accessibility
+  scrollBtn.setAttribute('aria-label', 'Scroll to top');
+  scrollBtn.setAttribute('role', 'button');
+  scrollBtn.setAttribute('tabindex', '0');
+}
+
