@@ -1,3 +1,8 @@
+function setupEventListeners() {
+  // Stub function to prevent errors
+  // Add event listeners here if needed in future
+}
+
 // Global state
 let currentUser = null;
 let currentPage = "landing";
@@ -30,6 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
   if (notificationsBell) {
     notificationsBell.addEventListener("click", openNotificationsModal);
   }
+  // Call scroll-to-top setup here
+  setupScrollToTop();
 });
 
 
@@ -1474,7 +1481,7 @@ function setupScrollToTop() {
     scrollTimeout = setTimeout(() => {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
       
-      if (scrollY > 200) {
+      if (scrollY > 50) {
         scrollBtn.classList.add('show');
       } else {
         scrollBtn.classList.remove('show');
