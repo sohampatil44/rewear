@@ -1555,3 +1555,68 @@ body {
     font-size: 16px;
   }
 }
+
+.f1{
+  display: flex;
+  flex-direction: column;
+  height: 450px;
+  width: 320px;
+  margin: 2rem;
+  background-color: #ffffff;
+  border-radius: 10px;
+}
+.f1 h2,button,p{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.3rem;
+  margin: 0.2rem;
+  margin-left: 0.3rem;
+}
+.f1 button {
+  width: 30%;
+  padding: 10px 16px;
+  padding-left: 1.3rem; /* You may not need this with full padding */
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #4a90e2, #007BFF); /* Gradient */
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin: 0.5rem;
+}
+.f1 button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #007BFF, #0056b3); /* Darker on hover */
+}
+.f1 button:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.f1 p{
+  font-size: 13px;
+}
+.f1 img {
+  width: 100%;
+  height: 70%;             /* Adjust height to suit your layout */
+  object-fit: cover;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 0;
+}
+
+.f1:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: scale(1.02);
+    transition: 0.3s;
+}
+.cards{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
