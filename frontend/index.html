@@ -685,6 +685,53 @@
     </div>
 
     <script src="static/script.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search-input');
+    const categoryFilter = document.getElementById('category-filter');
+    const items = document.querySelectorAll('.cards .f1');
+
+    // STEP 1: Get all unique item types from <h2> (e.g., Jacket, Blazer, etc.)
+    const itemTypes = new Set();
+    items.forEach(item => {
+        const itemType = item.querySelector('h2').textContent.trim();
+        itemTypes.add(itemType);
+    });
+
+    // STEP 2: Populate the dropdown with item types
+    itemTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type.toLowerCase();  // Use lowercase for consistency
+        option.textContent = type;
+        categoryFilter.appendChild(option);
+    });
+
+    // STEP 3: Combined filter (search + category)
+    function filterItems() {
+        const selectedType = categoryFilter.value.toLowerCase();
+        const searchQuery = searchInput.value.toLowerCase();
+
+        items.forEach(item => {
+            const itemType = item.querySelector('h2').textContent.trim().toLowerCase();
+            const itemName = itemType; // Assuming name is same as item type here
+
+            const matchesCategory = selectedType === '' || itemType === selectedType;
+            const matchesSearch = itemName.includes(searchQuery);
+
+            if (matchesCategory && matchesSearch) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // STEP 4: Event listeners
+    categoryFilter.addEventListener('change', filterItems);
+    searchInput.addEventListener('input', filterItems);
+});
+</script>
+
 </body>
 
 </html>
