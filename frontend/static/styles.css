@@ -1555,3 +1555,140 @@ body {
     font-size: 16px;
   }
 }
+
+
+#about-page .about-section {
+    padding: 70px 20px;
+    background-color: #f0f4f8; 
+    text-align: center;
+    color: #333;
+}
+
+#about-page .about-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#about-page .section-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+#about-page .section-subtitle {
+    font-size: 1.25rem;
+    color: #556b82;
+    max-width: 900px;
+    margin: 0 auto 60px auto;
+    line-height: 1.6;
+}
+
+
+#about-page .about-content {
+    display: flex;
+    justify-content: center; 
+    gap: 40px; 
+    flex-wrap: wrap; 
+    text-align: left;
+    margin-bottom: 80px;
+}
+
+#about-page .about-item {
+    flex: 1; 
+    max-width: 500px; 
+    min-width: 300px;
+    background-color: #ffffff;
+    padding: 35px; 
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#about-page .about-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+#about-page .about-item h3 {
+    font-size: 1.8rem;
+    color: #007aff;
+    margin-bottom: 20px;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+#about-page .about-item h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60px;
+    height: 4px;
+    background-color: #007aff;
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    #about-page .about-item h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+
+#about-page .about-item p {
+    font-size: 1.05rem;
+    color: #555;
+    line-height: 1.8;
+}
+
+#about-page .about-item strong {
+    color: #007aff;
+}
+
+
+@media (max-width: 992px) {
+    #about-page .section-title {
+        font-size: 2.5rem;
+    }
+    #about-page .section-subtitle {
+        font-size: 1.1rem;
+    }
+    #about-page .about-content {
+        gap: 30px;
+    }
+    #about-page .about-item {
+        max-width: unset; 
+    }
+    #about-page .about-item h3 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 768px) {
+    #about-page .about-section {
+        padding: 50px 15px;
+    }
+    #about-page .section-title {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    #about-page .section-subtitle {
+        font-size: 1rem;
+        margin-bottom: 40px;
+    }
+    #about-page .about-content {
+        flex-direction: column; 
+        gap: 30px;
+    }
+    #about-page .about-item {
+        flex-basis: 100%; 
+        text-align: center; 
+    }
+    #about-page .about-item h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
