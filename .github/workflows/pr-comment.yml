@@ -6,22 +6,36 @@ on:
 jobs:
   comment:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - name: Add PR comment
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.BOT_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.issues.createComment({
+            const body = `## 🙌 Thanks for your contribution!
+
+            Thank you for opening this pull request! Here's a quick checklist to help ensure a smooth review process:
+
+            ### Before Review
+            - [ ] Code follows our style guidelines
+            - [ ] Tests are included and passing
+            - [ ] Documentation has been updated (if needed)
+            - [ ] PR is linked to a relevant issue
+            - [ ] Branch is up to date with main
+
+            ### What's Next?
+            - A maintainer will review your PR within 2-3 business days
+            - Please be responsive to any feedback or requested changes
+            - Feel free to ask questions in the comments!
+
+            Thanks again for contributing! 🚀`;
+
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `🙌 Thanks for your PR!
-
-            Please ensure:
-            - [ ] Code follows guidelines
-            - [ ] Tests are included
-            - [ ] PR is linked to an issue
-
-            A maintainer will review soon 🚀`
+              body: body
             });
