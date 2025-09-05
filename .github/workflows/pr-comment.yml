@@ -1,4 +1,4 @@
-name: PR Auto Comment 
+name: PR Auto Comment
 
 on:
   pull_request_target:
