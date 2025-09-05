@@ -1,50 +1,30 @@
-name: PR Auto Comment
+name: Auto Comment on PR
+
 on:
   pull_request_target:
     types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
 
 jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
-      - name: Add PR comment
-        uses: actions/github-script@v7
+      - name: Comment on PR
+        uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.BOT_TOKEN }}
           script: |
-            console.log('PR Number:', context.issue.number);
-            console.log('PR from:', context.payload.pull_request.head.repo.full_name);
-            console.log('Base repo:', context.payload.repository.full_name);
-            console.log('PR author:', context.payload.pull_request.user.login);
-            
-            const body = `## 🙌 Thanks for your contribution!
+            const prNumber = context.issue.number;
 
-            Thank you for opening this pull request! Here's a quick checklist to help ensure a smooth review process:
+            const commentBody = `### Thanks for creating a PR for your Issue! ☺️\n\nKindly Star the repo ⭐ We'll review Your PR as soon as possible.\nIn the meantime, please double-check the **file changes** and ensure that **all commits** are accurate.\n\nIf there are any **unresolved review comments**, feel free to resolve them. 🙌🏼`;
 
-            ### Before Review
-            - [ ] Code follows our style guidelines
-            - [ ] Tests are included and passing
-            - [ ] Documentation has been updated (if needed)
-            - [ ] PR is linked to a relevant issue
-            - [ ] Branch is up to date with main
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: commentBody
+            });
 
-            ### What's Next?
-            - A maintainer will review your PR within 2-3 business days
-            - Please be responsive to any feedback or requested changes
-            - Feel free to ask questions in the comments!
-
-            Thanks again for contributing! 🚀`;
-
-            try {
-              const result = await github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: body
-              });
-              console.log('Comment added successfully! Comment ID:', result.data.id);
-            } catch (error) {
-              console.error('Error adding comment:', error);
-              console.error('Error details:', error.response?.data);
-              throw error;
-            }
+            console.log('Comment added successfully.');
