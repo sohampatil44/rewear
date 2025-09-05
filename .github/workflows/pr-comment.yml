@@ -8,7 +8,7 @@ on:
       pr-number:
         description: 'Pull Request number to comment on'
         required: true
-        default: '2'
+        default: '6'
 
 jobs:
   comment:
