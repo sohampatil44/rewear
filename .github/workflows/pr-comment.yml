@@ -1,28 +1,30 @@
-name: Auto Comment on PR
+name: PR Auto Comment 
 
 on:
-  pull_request:
-    types: [opened, reopened, ready_for_review]
+  pull_request_target:
+    types: [opened]
 
 jobs:
   comment:
-    if: github.event.pull_request.head.repo.fork == false   # 👈 only run if PR is not from a fork
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      issues: write
     steps:
-      - name: Add or update PR comment
-        uses: peter-evans/create-or-update-comment@v4
+      - name: Add PR comment
+        uses: actions/github-script@v6
         with:
-          token: ${{ github.token }}   # Comment will come from github-actions[bot]
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Thanks for creating a PR for your Issue! ☺️
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `
+🙌 Thanks for your PR!
 
-            Kindly **Star** the repo ⭐ We'll review your PR as soon as possible.
+Please ensure:
+- [ ] Code follows guidelines
+- [ ] Tests are included
+- [ ] PR is linked to an issue
 
-            In the meantime, please **double-check the file changes** and ensure that **all commits** are accurate.
-
-            If there are any **unresolved review comments**, feel free to resolve them. 🙌🏼
-          edit-mode: replace
+A maintainer will review soon 🚀
+              `
+            })
