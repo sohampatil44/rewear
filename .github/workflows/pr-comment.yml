@@ -3,12 +3,6 @@ name: Auto Comment on PR
 on:
   pull_request:
     types: [opened, reopened, ready_for_review]
-  workflow_dispatch:
-    inputs:
-      pr-number:
-        description: 'Pull Request number to comment on'
-        required: true
-        default: '6'
 
 jobs:
   comment:
@@ -17,7 +11,7 @@ jobs:
       - name: Add or update PR comment
         uses: peter-evans/create-or-update-comment@v4
         with:
-          issue-number: ${{ github.event.pull_request.number || inputs.pr-number }}
+          issue-number: ${{ github.event.pull_request.number }}
           body: |
             Thanks for creating a PR for your Issue! ☺️
 
