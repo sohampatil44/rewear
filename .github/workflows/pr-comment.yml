@@ -11,7 +11,7 @@ jobs:
       - name: Add PR comment
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.PAT_TOKEN }}
+          github-token: ${{ secrets.BOT_TOKEN }}
           script: |
             github.rest.issues.createComment({
               issue_number: context.issue.number,
