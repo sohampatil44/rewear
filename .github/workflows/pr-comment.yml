@@ -1,0 +1,23 @@
+name: Auto Comment on PR
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add or update PR comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Thanks for creating a PR for your Issue! ☺️
+
+            Kindly **Star** the repo ⭐ We'll review Your PR as soon as possible.
+
+            In the meantime, please **double-check the file changes** and ensure that **all commits** are accurate.
+
+            If there are any **unresolved review comments**, feel free to resolve them. 🙌🏼
+          edit-mode: replace
