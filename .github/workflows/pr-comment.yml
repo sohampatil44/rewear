@@ -6,19 +6,23 @@ on:
 
 jobs:
   comment:
+    if: github.event.pull_request.head.repo.fork == false   # 👈 only run if PR is not from a fork
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     steps:
       - name: Add or update PR comment
         uses: peter-evans/create-or-update-comment@v4
         with:
-          token: ${{ github.token }}   # 👈 this makes it come from github-actions[bot]
+          token: ${{ github.token }}   # Comment will come from github-actions[bot]
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             Thanks for creating a PR for your Issue! ☺️
 
-            Kindly **Star** the repo ⭐ We'll review Your PR as soon as possible.
+            Kindly **Star** the repo ⭐ We'll review your PR as soon as possible.
 
             In the meantime, please **double-check the file changes** and ensure that **all commits** are accurate.
 
             If there are any **unresolved review comments**, feel free to resolve them. 🙌🏼
-          edit-mode: replace   # ensures one single comment (no duplicates)
+          edit-mode: replace
