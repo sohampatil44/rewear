@@ -6,15 +6,17 @@ on:
 jobs:
   comment:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
     steps:
       - name: Add PR comment
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.BOT_TOKEN }}
           script: |
+            console.log('PR Number:', context.issue.number);
+            console.log('PR from:', context.payload.pull_request.head.repo.full_name);
+            console.log('Base repo:', context.payload.repository.full_name);
+            console.log('PR author:', context.payload.pull_request.user.login);
+            
             const body = `## 🙌 Thanks for your contribution!
 
             Thank you for opening this pull request! Here's a quick checklist to help ensure a smooth review process:
@@ -33,9 +35,16 @@ jobs:
 
             Thanks again for contributing! 🚀`;
 
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
+            try {
+              const result = await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+              console.log('Comment added successfully! Comment ID:', result.data.id);
+            } catch (error) {
+              console.error('Error adding comment:', error);
+              console.error('Error details:', error.response?.data);
+              throw error;
+            }
