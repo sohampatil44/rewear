@@ -1,4 +1,50 @@
+// Dark Mode Toggle Functionality
+function initializeTheme() {
+  // Check for saved theme preference or default to light mode
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  // Update toggle button text
+  updateThemeToggleText(savedTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeToggleText(newTheme);
+}
+
+function updateThemeToggleText(theme) {
+  const toggleButtons = [
+    document.getElementById('theme-toggle'),
+    document.getElementById('theme-toggle-user')
+  ];
+  
+  toggleButtons.forEach(button => {
+    if (button) {
+      button.innerHTML = theme === 'light' 
+        ? '<i class="fas fa-moon"></i> Dark' 
+        : '<i class="fas fa-sun"></i> Light';
+    }
+  });
+}
+
 function setupEventListeners() {
+  // Theme toggle setup for both buttons
+  const themeToggleButtons = [
+    document.getElementById('theme-toggle'),
+    document.getElementById('theme-toggle-user')
+  ];
+  
+  themeToggleButtons.forEach(button => {
+    if (button) {
+      button.addEventListener('click', toggleTheme);
+    }
+  });
+  
   // Stub function to prevent errors
   // Add event listeners here if needed in future
 }
@@ -14,6 +60,7 @@ const API_BASE = "/api";
 
 // Initialize app
 document.addEventListener("DOMContentLoaded", function () {
+  initializeTheme();
   checkAuth();
   loadCategories();
   loadFeaturedItems();
