@@ -1,5 +1,4 @@
 name: PR Auto Comment
-
 on:
   pull_request_target:
     types: [opened]
@@ -17,14 +16,12 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `
-🙌 Thanks for your PR!
+              body: `🙌 Thanks for your PR!
 
-Please ensure:
-- [ ] Code follows guidelines
-- [ ] Tests are included
-- [ ] PR is linked to an issue
+            Please ensure:
+            - [ ] Code follows guidelines
+            - [ ] Tests are included
+            - [ ] PR is linked to an issue
 
-A maintainer will review soon 🚀
-              `
-            })
+            A maintainer will review soon 🚀`
+            });
