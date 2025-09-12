@@ -65,9 +65,6 @@ rewear/
   README.md             # Project documentation
 ```
 
---- 
-Sure! Here's your **Project Admin** section, properly formatted in Markdown for a clean and professional look in your README:
-
 ---
 
 ## 🧑‍💼 Project Admin
