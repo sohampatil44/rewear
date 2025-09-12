@@ -66,3 +66,26 @@ rewear/
 ```
 
 --- 
+Sure! Here's your **Project Admin** section, properly formatted in Markdown for a clean and professional look in your README:
+
+---
+
+## 🧑‍💼 Project Admin
+
+* [AKing-283](https://github.com/AKing-283) — *Project Lead & Maintainer*
+
+---
+
+
+## 🤝 Contributors
+
+We welcome all enthusiastic contributors! Here are some of the amazing folks who’ve contributed to this project:
+
+<a href="https://github.com/AKing-283/Rewear/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=AKing-283/Rewear" />
+</a>
+
+> Join the community — check out [open issues](https://github.com/AKing-283/Rewear/issues) to get started!
+
+---
+
