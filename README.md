@@ -6,6 +6,13 @@
 
 ---
 
+# 🚀 Selected for GSSOC'25
+
+We’re proud to announce that ReWear has been officially selected as a project under GirlScript Summer of Code 2025 (GSSOC'25)! 🎉
+We welcome all contributors to join us in making sustainable fashion accessible through tech.
+
+---
+
 ## 🌟 Key Features
 
 - ✅ **Modern, Responsive UI**  
