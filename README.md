@@ -1,16 +1,37 @@
-# ReWear
+# 👚 ReWear — The Community-Powered Clothing Exchange Platform
 
-**ReWear** is a modern, community-driven clothing exchange platform that makes sustainable fashion fun and easy. List your unused clothes, earn points, and swap for new styles with others—no money needed!
+**ReWear** is a modern, community-driven clothing exchange platform that makes sustainable fashion fun, rewarding, and accessible to everyone. Trade your unused clothes, earn points, and discover new styles — all without spending a dime.
+
+> 🌱 Reduce waste. ♻️ Promote reuse. 👗 Refresh your wardrobe — sustainably.
 
 ---
 
-## 🌟 Features
-- **Modern, Responsive UI** — Beautiful, mobile-friendly design
-- **Image Upload** — Add photos to your items for better swaps
-- **Points System** — Earn points for listing, spend points to redeem
-- **Admin Approval** — Quality control for all listed items
-- **Live Dashboard** — Track your points, items, and swaps
-- **Sustainability Focus** — Reduce waste and join a green community
+# 🚀 Selected for GSSOC'25
+
+We’re proud to announce that ReWear has been officially selected as a project under GirlScript Summer of Code 2025 (GSSOC'25)! 🎉
+We welcome all contributors to join us in making sustainable fashion accessible through tech.
+
+---
+
+## 🌟 Key Features
+
+- ✅ **Modern, Responsive UI**  
+  Beautiful design optimized for mobile and desktop experiences.
+
+- 🖼️ **Image Uploads**  
+  Upload item images to attract more swappers and increase engagement.
+
+- 💎 **Points-Based System**  
+  Earn points for listing items, and spend them to redeem others' clothes.
+
+- 🛡️ **Admin Approval Workflow**  
+  All items go through admin checks to ensure quality and appropriateness.
+
+- 📊 **Live User Dashboard**  
+  Track your listed items, earned points, and swap history in real-time.
+
+- 🌍 **Sustainability First**  
+  Join a community focused on reducing textile waste and promoting conscious consumption.
 
 ---
 
@@ -18,11 +39,13 @@
 
 [![Watch the Demo](https://img.youtube.com/vi/1aPzcJbCsUFHJBPcuQM3xE6G7c36irWtJ/0.jpg)](https://drive.google.com/file/d/1aPzcJbCsUFHJBPcuQM3xE6G7c36irWtJ/view?usp=sharing)
 
-👉 [Click here to watch the full demo video](https://drive.google.com/file/d/1aPzcJbCsUFHJBPcuQM3xE6G7c36irWtJ/view?usp=sharing)
+▶️ [Click here to watch the full demo video](https://drive.google.com/file/d/1aPzcJbCsUFHJBPcuQM3xE6G7c36irWtJ/view?usp=sharing)
 
 ---
 
 ## 🛠️ Project Structure
+
+
 ```
 rewear/
   backend/
@@ -43,3 +66,26 @@ rewear/
 ```
 
 --- 
+Sure! Here's your **Project Admin** section, properly formatted in Markdown for a clean and professional look in your README:
+
+---
+
+## 🧑‍💼 Project Admin
+
+* [AKing-283](https://github.com/AKing-283) — *Project Lead & Maintainer*
+
+---
+
+
+## 🤝 Contributors
+
+We welcome all enthusiastic contributors! Here are some of the amazing folks who’ve contributed to this project:
+
+<a href="https://github.com/AKing-283/Rewear/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=AKing-283/Rewear" />
+</a>
+
+> Join the community — check out [open issues](https://github.com/AKing-283/Rewear/issues) to get started!
+
+---
+
