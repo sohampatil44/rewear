@@ -1841,4 +1841,9 @@ body {
   max-width: 100%;
   object-fit: contain;
 }
-
+#feedback-form{
+  transition: transform 0.3s ease-in-out;
+}
+#feedback-form:hover{
+  transform: scale(1.05);
+}
