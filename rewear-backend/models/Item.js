@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 
-const itemSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+const ItemSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  description: { type: String },
-  category: { type: String },
-  image: { type: String }, // saved path for uploaded image
-  createdAt: { type: Date, default: Date.now }
-});
+  description: { type: String, required: true },
+  category: { type: String, required: true },
+  imageUrl: { type: String, required: true },
+  uploader: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  condition: { type: String },
+  isApproved: { type: Boolean, default: false },  // 🔑 default = false
+}, { timestamps: true });
 
-export default mongoose.model("Item", itemSchema);
+export default mongoose.model("Item", ItemSchema);

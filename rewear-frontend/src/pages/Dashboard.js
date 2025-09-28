@@ -1,7 +1,8 @@
 import React from "react";
 import "./Dashboard.css";  
 import Navbar from "./Navbar.js";  // ✅ Import Navbar component
-
+import Footer from "./Footer.js";
+import { Link } from "react-router-dom";
 const Dashboard = () => {
   return (
     <div className="dashboard">
@@ -17,8 +18,12 @@ const Dashboard = () => {
           fashion circular and fun!
         </p>
         <div className="buttons">
-          <button className="primary">Start Swapping</button>
-          <button className="secondary">Browse Items</button>
+            <Link to="/swap">
+              <button className="primary">Start Swapping</button>
+            </Link>
+            <Link to="/browse">
+              <button className="secondary">Browse Items</button>
+            </Link>
         </div>
 
         <div className="stats">
@@ -72,19 +77,7 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-top">
-          <h3>ReWear</h3>
-          <nav>
-            <a href="/">Home</a>
-            <a href="/browse">Browse</a>
-            <a href="/add">Add Item</a>
-            <a href="/dashboard">Dashboard</a>
-          </nav>
-        </div>
-        <p>© 2024 ReWear. All rights reserved.</p>
-      </footer>
+     
     </div>
   );
 };
