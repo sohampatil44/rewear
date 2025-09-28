@@ -1,0 +1,66 @@
+.page {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 30px 25px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  line-height: 1.7;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.page:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.page h1 {
+  text-align: center;
+  color: #222;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+}
+
+.page h3 {
+  color: #007bff;
+  margin-top: 25px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.page h3:hover {
+  color: #0056b3;
+}
+
+.page p {
+  color: #555;
+  padding-left: 10px;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+.page p:hover {
+  color: #333;
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .page {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .page h1 {
+    font-size: 2rem;
+  }
+
+  .page h3 {
+    font-size: 1.2rem;
+  }
+
+  .page p {
+    font-size: 1rem;
+  }
+}

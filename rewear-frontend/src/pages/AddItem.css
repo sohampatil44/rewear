@@ -23,12 +23,15 @@
 .add-container p {
   color: #555;
   margin-bottom: 1.5rem;
+  font-family: 'Inter',sans-serif;
 }
 
 .add-form {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+  margin-top: auto;
+  font-family: "Inter", sans-serif;
 }
 
 .form-group {
