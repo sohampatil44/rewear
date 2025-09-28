@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.page {
+  padding: 30px;
+  background: #fff;
+  margin: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  font-family: "Inter", sans-serif;
+}
+
+.admin-card {
+  margin-bottom: 15px;
+}
+

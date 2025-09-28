@@ -125,7 +125,6 @@ function Profile() {
 
   return (
     <>
-      <Navbar />
       <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         {/* Main Content */}
         <Box sx={{ flex: 1, py: 4, mt: 8 }}> {/* mt: 8 to account for fixed navbar */}
@@ -311,7 +310,7 @@ function Profile() {
                     <Grid item xs={12} sm={6} md={3}>
                       <Typography variant="body2" color="text.secondary">Reward Points</Typography>
                       <Typography variant="body1" fontWeight="medium">
-                        {user.points || 0} points
+                        {user.points || 100} points
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
@@ -334,8 +333,7 @@ function Profile() {
           </Container>
         </Box>
 
-        {/* Footer */}
-        <Footer />
+     
       </Box>
     </>
   );
