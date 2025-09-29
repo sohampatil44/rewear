@@ -1,32 +1,71 @@
 resource "aws_s3_bucket" "frontend" {
-    bucket = "rewear-frontend-bucket"
-    acl = "public-read"
+  bucket = "rewear-frontend-bucket"
+  acl    = "public-read"
 
-    website {
-        index_document = "index.html"
-        error_document = "index.html"
-    }
+  website {
+    index_document = "index.html"
+    error_document = "index.html"
+  }
 
-    tags = {
-        Name = "rewear-frontend-bucket"
-        Environment = "Dev"
-    }
-  
+  tags = {
+    Name        = "rewear-frontend-bucket"
+    Environment = "Dev"
+  }
 }
 
 resource "aws_s3_bucket_policy" "frontend_policy" {
-    bucket = aws_s3_bucket.frontend.id
-    policy = jsonencode({
-        Version = "2012-10-17"
-        Statement = [
-            {
-                Effect = "Allow"
-                Principal = "*"
-                Action = "s3:GetObject"
-                Resource = "${aws_s3_bucket.frontend.arn}/*"
-            }
-        ]
-    })
-  
+  bucket = aws_s3_bucket.frontend.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.frontend.arn}/*"
+      }
+    ]
+  })
 }
 
+# CloudFront Distribution
+resource "aws_cloudfront_distribution" "frontend" {
+  origin {
+    domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
+    origin_id   = "S3-rewear-frontend-bucket"
+  }
+
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3-rewear-frontend-bucket"
+
+    viewer_protocol_policy = "redirect-to-https"
+
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  tags = {
+    Name        = "rewear-frontend-cf"
+    Environment = "Dev"
+  }
+}

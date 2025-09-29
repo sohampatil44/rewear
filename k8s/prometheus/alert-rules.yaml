@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: monitoring
+  labels:
+    role: prometheus-rules
+data:
+  alert.rules: |
+    groups:
+      - name: k8s-resources
+        rules:
+
+        # High CPU usage on any pod (avg over 2m)
+        - alert: PodHighCpu
+          expr: |
+            sum(rate(container_cpu_usage_seconds_total{container!=""}[2m])) by (pod, namespace) 
+            / sum(kube_pod_container_resource_limits_cpu_cores{container!=""}) by (pod, namespace)
+            > 0.8
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} CPU usage > 80%"
+            description: "Pod CPU usage is high ({{ $value }})."
+
+        # High memory usage on any pod
+        - alert: PodHighMemory
+          expr: sum(container_memory_usage_bytes{container!=""}) by (pod, namespace)
+                / sum(kube_pod_container_resource_limits_memory_bytes{container!=""}) by (pod, namespace)
+                > 0.9
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} Memory > 90%"
+
+        # Container restart spike or many restarts
+        - alert: ContainerRestartHigh
+          expr: increase(kube_pod_container_status_restarts_total[10m]) > 5
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Container restarts high for pod {{ $labels.pod }}"
+            description: "Container restarts increased by more than 5 in last 10m."
+
+        # Node NotReady
+        - alert: NodeNotReady
+          expr: kube_node_status_condition{condition="Ready",status="false"} == 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ $labels.node }} NotReady"
+            description: "Kubernetes node is not Ready."

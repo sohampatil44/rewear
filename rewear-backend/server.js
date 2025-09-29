@@ -1,18 +1,33 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import client from "prom-client";
+import authRoutes from "./routes/auth.js";
+import userRoutes from './routes/user.js'; // Make sure this is imported
+import itemRoutes from './routes/items.js';
+import swapRoutes from './routes/swaps.js';
 
+
+
+dotenv.config();
 const app = express();
+const collectDefaultMetrics = client.collectDefaultMetrics;
+
+collectDefaultMetrics();
+
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json());
 
-connectDB();
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes); // Use the user routes
+app.use("/api/items", itemRoutes);
+app.use("/api/swaps", swapRoutes);
 
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/items', require('./routes/items'));
-app.use('/api/swaps', require('./routes/swaps'));
-app.use('/api/admin', require('./routes/admin'));
+mongoose
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error(err));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

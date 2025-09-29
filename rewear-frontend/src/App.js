@@ -1,44 +1,25 @@
-import React, { useState } from "react";
-import { Container, Typography, Divider } from "@mui/material";
-import Landing from "./components/Landing";
-import Auth from "./components/Auth";
-import AddItem from "./components/AddItem";
-import Items from "./components/Items";
-import Swaps from "./components/Swaps";
-import Dashboard from "./components/Dashboard";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import AuthPage from "./pages/AuthPage";
+import Browse from "./pages/Browse";
+import AddItem from "./pages/AddItem";
+import Profile from "./pages/Profile";
 
 function App() {
-  const [token, setToken] = useState("");
-  const [refresh, setRefresh] = useState(false);
-
-  const handleItemAdded = () => setRefresh(!refresh);
-  const handleSwapAction = () => setRefresh(!refresh);
-
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h3" align="center" gutterBottom>
-        ReWear
-      </Typography>
-      <Divider sx={{ mb: 3 }} />
-
-      {/* Landing page carousel */}
-      <Landing />
-
-      {/* Auth */}
-      <Auth setToken={setToken} />
-
-      {/* Dashboard */}
-      {token && <Dashboard token={token} />}
-
-      {/* Add Items */}
-      <AddItem token={token} onItemAdded={handleItemAdded} />
-
-      {/* Items List */}
-      <Items token={token} refresh={refresh} onSwap={handleSwapAction} />
-
-      {/* Swaps */}
-      <Swaps token={token} />
-    </Container>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/AuthPage" element={<AuthPage />} />
+        <Route path="/browse" element={<Browse />} />
+        <Route path="/add" element={<AddItem />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+    </Router>
   );
 }
 

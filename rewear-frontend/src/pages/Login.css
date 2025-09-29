@@ -1,0 +1,41 @@
+/* src/Login.css */
+
+/* ... (previous CSS styles for .login-container, .login-card, etc.) ... */
+
+.password-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px; /* Same as the label's margin-bottom */
+}
+
+.forgot-password-link {
+  font-size: 0.9rem;
+  color: #007bff; /* Primary link color */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.forgot-password-link:hover {
+  color: #0056b3; /* Darker blue on hover */
+  text-decoration: underline;
+}
+
+.signup-prompt {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.signup-prompt a {
+  color: #007bff; /* Primary link color */
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease-in-out;
+}
+
+.signup-prompt a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}

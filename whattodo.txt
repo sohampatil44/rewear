@@ -1,0 +1,34 @@
+1. for notifications/lambda_function.py that code needs to be zipped so in cicd pipelie include this 
+cd modules/notifications
+zip -r lambda.zip lambda_function.py
+# optionally include libraries if needed; for simple boto3 usage you don't need extra deps
+
+
+2. in /Users/sohampatil/Documents/Rewear/k8s/alertmanager/alert-manager.config.yaml
+there is one secitn whee alert_api_url is required so that iss got
+through outputs of notifications module but to feth it dynamically we
+add step in cicd pipeline to fetch it though that outputs to put 
+in /Users/sohampatil/Documents/Rewear/k8s/alertmanager/alert-manager.tpl.yaml
+that script curently im storing in modules/ci/deploy_notifications.sh
+which will fetch this api url dynamically
+
+in pipeling this wud run something lie this:-
+
+ # set AWS creds (use GitHub secrets)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET }}
+          aws-region: us-east-1
+
+      - name: Setup kubectl and eks
+        run: |
+          # if using EKS, fetch kubeconfig
+          aws eks update-kubeconfig --name <your-cluster-name> --region us-east-1
+
+      - name: Deploy notifications (terraform + lambda zip + update Alertmanager)
+        run: |
+          bash ci/deploy_notifications.sh
+
+############################################################################
