@@ -4,3 +4,5 @@ src/database/app.db
 .env
 .env.*
 !*.env.example  # Keep example files
+.DS_Store
+node_modules/

@@ -66,7 +66,7 @@ export default function Login() {
           </button>
         </form>
         <p className="signup-prompt">
-          Don't have an account? <Link to="/AuthPage">Sign up</Link>
+          Don't have an account? <Link to="/Register">Sign up</Link>
         </p>
       </div>
     </div>

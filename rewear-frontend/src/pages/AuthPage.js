@@ -1,12 +1,57 @@
 // src/AuthPage.js
-
-import React from "react";
+import React, { useState } from "react";
 import "./AuthPage.css";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Link } from "react-router-dom"; // Import Link
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const AuthPage = ({ type }) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (type === "login") {
+        const res = await axios.post("http://localhost:5000/api/auth/login", {
+          email,
+          password,
+        });
+
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        if (res.data.user.isAdmin) {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/";
+        }
+      } else {
+        const res = await axios.post("http://localhost:5000/api/auth/register", {
+          name,
+          email,
+          password,
+          isAdmin, // ✅ pass admin flag
+        });
+
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        if (res.data.user.isAdmin) {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/";
+        }
+      }
+    } catch (err) {
+      alert("❌ Error: " + (err.response?.data?.msg || "Something went wrong"));
+    }
+  };
+
   return (
     <div className="auth-page">
       <Navbar />
@@ -19,23 +64,55 @@ const AuthPage = ({ type }) => {
             : "Join the ReWear community and start swapping sustainably."}
         </p>
 
-        <form className="auth-form">
+        <form className="auth-form" onSubmit={handleSubmit}>
           {type === "register" && (
             <div className="form-group">
               <label>Name</label>
-              <input type="text" placeholder="Enter your name" required />
+              <input
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </div>
           )}
 
           <div className="form-group">
             <label>Email</label>
-            <input type="email" placeholder="Enter your email" required />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Enter password" required />
+            <input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
+
+          {/* ✅ Show admin checkbox only when registering */}
+          {type === "register" && (
+            <div className="form-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.checked)}
+                />{" "}
+                Register as Admin
+              </label>
+            </div>
+          )}
 
           <button type="submit" className="auth-btn">
             {type === "login" ? "Login" : "Register"}
@@ -46,7 +123,7 @@ const AuthPage = ({ type }) => {
           {type === "login"
             ? "Don't have an account? "
             : "Already have an account? "}
-          <Link to={type === "login" ? "/register" : "/"}>
+          <Link to={type === "login" ? "/register" : "/login"}>
             {type === "login" ? "Register" : "Login"}
           </Link>
         </p>

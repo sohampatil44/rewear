@@ -1,16 +1,19 @@
-// src/components/ProtectedRoute.js
-import React, { useContext } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children }) => {
-  const { user } = useContext(AuthContext);
+function ProtectedRoute({ children, adminOnly = false }) {
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user")); // store user in localStorage after login
 
-  if (!user) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 
+  if (adminOnly && !user?.isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
-};
+}
 
 export default ProtectedRoute;
