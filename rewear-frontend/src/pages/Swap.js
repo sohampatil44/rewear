@@ -1,6 +1,6 @@
 // src/pages/Swap.js
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";   // ✅ Added
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import {
@@ -24,37 +24,22 @@ const Swap = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [editForm, setEditForm] = useState({ title: "", description: "", category: "" });
 
-  const token = localStorage.getItem("token");
-
   // ✅ Fetch swaps & items
   useEffect(() => {
-    if (!token) return;
-
     // My swap requests
-    axios
-      .get("http://localhost:5000/api/swaps", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API.get("/swaps")
       .then((res) => setSwaps(res.data))
       .catch((err) => console.error("Error fetching swaps:", err));
 
     // My uploaded items
-    axios
-      .get("http://localhost:5000/api/items/my-items", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API.get("/items/my-items")
       .then((res) => setMyItems(res.data))
       .catch((err) => console.error("Error fetching my items:", err));
-  }, [token]);
+  }, []);
 
   // ✅ Handle swap accept/reject
   const handleUpdateSwap = (id, status) => {
-    axios
-      .put(
-        `http://localhost:5000/api/swaps/${id}`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+    API.put(`/swaps/${id}`, { status })
       .then((res) => {
         setSwaps((prev) => prev.map((s) => (s._id === id ? res.data : s)));
       })
@@ -63,10 +48,7 @@ const Swap = () => {
 
   // ✅ Delete item
   const handleDeleteItem = (id) => {
-    axios
-      .delete(`http://localhost:5000/api/items/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API.delete(`/items/${id}`)
       .then(() => {
         setMyItems((prev) => prev.filter((i) => i._id !== id));
         toast.success("🗑️ Item deleted");
@@ -80,19 +62,20 @@ const Swap = () => {
   // ✅ Start editing item
   const startEdit = (item) => {
     setEditingItem(item._id);
-    setEditForm({ title: item.title, description: item.description, category: item.category });
+    setEditForm({
+      title: item.title,
+      description: item.description,
+      category: item.category,
+    });
   };
 
   // ✅ Save edited item
   const handleEditSave = (id) => {
-    axios
-      .put(
-        `http://localhost:5000/api/items/${id}`,
-        editForm,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+    API.put(`/items/${id}`, editForm)
       .then((res) => {
-        setMyItems((prev) => prev.map((i) => (i._id === id ? res.data : i)));
+        setMyItems((prev) =>
+          prev.map((i) => (i._id === id ? res.data : i))
+        );
         setEditingItem(null);
         toast.success("✏️ Item updated");
       })
@@ -106,13 +89,15 @@ const Swap = () => {
     <>
 
       <Container sx={{ mt: 12, mb: 6 }}>
-        {/* ✅ My Uploaded Items */}
+        {/* My Uploaded Items */}
         <Typography variant="h4" gutterBottom>
           My Items
         </Typography>
 
         {myItems.length === 0 ? (
-          <Typography color="text.secondary">You haven’t uploaded any items yet.</Typography>
+          <Typography color="text.secondary">
+            You haven’t uploaded any items yet.
+          </Typography>
         ) : (
           <Grid container spacing={3}>
             {myItems.map((item) => (
@@ -123,25 +108,31 @@ const Swap = () => {
                       <>
                         <TextField
                           label="Title"
-                          name="title"
                           value={editForm.title}
-                          onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, title: e.target.value })
+                          }
                           fullWidth
                           sx={{ mb: 2 }}
                         />
+
                         <TextField
                           label="Description"
-                          name="description"
                           value={editForm.description}
-                          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, description: e.target.value })
+                          }
                           multiline
                           rows={2}
                           fullWidth
                           sx={{ mb: 2 }}
                         />
+
                         <Select
                           value={editForm.category}
-                          onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, category: e.target.value })
+                          }
                           fullWidth
                         >
                           <MenuItem value="tops">Tops</MenuItem>
@@ -158,6 +149,7 @@ const Swap = () => {
                         <Typography variant="body2" color="text.secondary">
                           Category: {item.category}
                         </Typography>
+
                         <Chip
                           label={item.isApproved ? "Approved ✅" : "Pending ⏳"}
                           color={item.isApproved ? "success" : "warning"}
@@ -166,22 +158,37 @@ const Swap = () => {
                       </>
                     )}
                   </CardContent>
+
                   <CardActions>
                     {editingItem === item._id ? (
                       <>
-                        <Button onClick={() => handleEditSave(item._id)} color="success">
+                        <Button
+                          onClick={() => handleEditSave(item._id)}
+                          color="success"
+                        >
                           Save
                         </Button>
-                        <Button onClick={() => setEditingItem(null)} color="error">
+
+                        <Button
+                          onClick={() => setEditingItem(null)}
+                          color="error"
+                        >
                           Cancel
                         </Button>
                       </>
                     ) : (
                       <>
-                        <Button onClick={() => startEdit(item)} color="primary">
+                        <Button
+                          onClick={() => startEdit(item)}
+                          color="primary"
+                        >
                           Edit
                         </Button>
-                        <Button onClick={() => handleDeleteItem(item._id)} color="error">
+
+                        <Button
+                          onClick={() => handleDeleteItem(item._id)}
+                          color="error"
+                        >
                           Delete
                         </Button>
                       </>
@@ -193,7 +200,7 @@ const Swap = () => {
           </Grid>
         )}
 
-        {/* ✅ Divider */}
+        {/* Divider */}
         <Typography variant="h4" gutterBottom sx={{ mt: 6 }}>
           My Swap Requests
         </Typography>
@@ -209,9 +216,12 @@ const Swap = () => {
                 <Card>
                   <CardContent>
                     <Typography>
-                      <b>{swap.fromUser?.name}</b> offered <b>{swap.itemOffered?.title}</b>{" "}
-                      to <b>{swap.toUser?.name}</b> for <b>{swap.itemRequested?.title}</b>
+                      <b>{swap.fromUser?.name}</b> offered{" "}
+                      <b>{swap.itemOffered?.title}</b> to{" "}
+                      <b>{swap.toUser?.name}</b> for{" "}
+                      <b>{swap.itemRequested?.title}</b>
                     </Typography>
+
                     <Chip
                       label={swap.status.toUpperCase()}
                       color={
@@ -234,6 +244,7 @@ const Swap = () => {
                       >
                         Accept
                       </Button>
+
                       <Button
                         color="error"
                         variant="outlined"
@@ -249,7 +260,6 @@ const Swap = () => {
           </Grid>
         )}
       </Container>
-
     </>
   );
 };

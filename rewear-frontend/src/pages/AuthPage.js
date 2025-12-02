@@ -4,7 +4,7 @@ import "./AuthPage.css";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 
 const AuthPage = ({ type }) => {
   const [name, setName] = useState("");
@@ -17,7 +17,7 @@ const AuthPage = ({ type }) => {
 
     try {
       if (type === "login") {
-        const res = await axios.post("http://localhost:5000/api/auth/login", {
+        const res = await API.post("/auth/login", {
           email,
           password,
         });
@@ -31,11 +31,11 @@ const AuthPage = ({ type }) => {
           window.location.href = "/";
         }
       } else {
-        const res = await axios.post("http://localhost:5000/api/auth/register", {
+        const res = await API.post("/auth/register", {
           name,
           email,
           password,
-          isAdmin, // ✅ pass admin flag
+          isAdmin,
         });
 
         localStorage.setItem("token", res.data.token);
@@ -48,7 +48,9 @@ const AuthPage = ({ type }) => {
         }
       }
     } catch (err) {
-      alert("❌ Error: " + (err.response?.data?.msg || "Something went wrong"));
+      alert(
+        "❌ Error: " + (err.response?.data?.msg || "Something went wrong")
+      );
     }
   };
 
@@ -100,7 +102,6 @@ const AuthPage = ({ type }) => {
             />
           </div>
 
-          {/* ✅ Show admin checkbox only when registering */}
           {type === "register" && (
             <div className="form-group">
               <label>

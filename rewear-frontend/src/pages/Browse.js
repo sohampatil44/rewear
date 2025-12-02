@@ -1,8 +1,9 @@
+// src/Browse.js
 import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "./Browse.css";
-import axios from "axios";
+import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 const Browse = () => {
@@ -11,15 +12,13 @@ const Browse = () => {
 
   // ✅ Fetch only approved items
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/items/approved")
+    API.get("/items/approved")
       .then((res) => setItems(res.data))
       .catch((err) => console.error("Error fetching items:", err));
   }, []);
 
   return (
     <div className="browse-page">
-
       <section className="browse-hero">
         <h2>Browse Items</h2>
         <p>Explore community-listed items and start swapping sustainably!</p>
@@ -33,7 +32,7 @@ const Browse = () => {
             <div key={item._id} className="browse-card">
               {/* ✅ Show uploaded image */}
               <img
-                src={`http://localhost:5000${item.imageUrl}`}
+                src={item.imageUrl}
                 alt={item.title}
                 className="browse-image"
               />
@@ -43,8 +42,12 @@ const Browse = () => {
                 <strong>Category:</strong> {item.category}
               </p>
               <p>Listed by {item.uploader?.name || "Unknown"}</p>
-              <button className="browse-btn" 
-              onClick={() => navigate(`/swap-request/${item._id}`)}>Swap Now</button>
+              <button
+                className="browse-btn"
+                onClick={() => navigate(`/swap-request/${item._id}`)}
+              >
+                Swap Now
+              </button>
             </div>
           ))
         )}

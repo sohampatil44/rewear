@@ -1,29 +1,33 @@
+// src/Dashboard.js
 import React from "react";
-import "./Dashboard.css";  
-import Navbar from "./Navbar.js";  // ✅ Import Navbar component
+import "./Dashboard.css";
+import Navbar from "./Navbar.js";
 import Footer from "./Footer.js";
 import { Link } from "react-router-dom";
+
 const Dashboard = () => {
   return (
     <div className="dashboard">
-      {/* ✅ Navbar */}
+      {/* Navbar */}
       <Navbar />
 
       {/* Hero Section */}
       <section className="hero">
-        <h1>Sustainable Fashion, <span>Together</span></h1>
+        <h1>
+          Sustainable Fashion, <span>Together</span>
+        </h1>
         <p>
           Give your unused clothing a new life. Swap directly with others or use
           points to find your next favorite piece. Join a community making
           fashion circular and fun!
         </p>
         <div className="buttons">
-            <Link to="/swap">
-              <button className="primary">Start Swapping</button>
-            </Link>
-            <Link to="/browse">
-              <button className="secondary">Browse Items</button>
-            </Link>
+          <Link to="/swap">
+            <button className="primary">Start Swapping</button>
+          </Link>
+          <Link to="/browse">
+            <button className="secondary">Browse Items</button>
+          </Link>
         </div>
 
         <div className="stats">
@@ -76,8 +80,6 @@ const Dashboard = () => {
           ))}
         </div>
       </section>
-
-     
     </div>
   );
 };

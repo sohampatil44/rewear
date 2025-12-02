@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rewear-backend
+  namespace: default
+  labels:
+    app: rewear-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rewear-backend
+  template:
+    metadata:
+      labels:
+        app: rewear-backend
+    spec:
+      nodeSelector:
+        role: ec2
+      containers:
+      - name: rewear-backend
+        image: 724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5001
+          name: http
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: uri
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+

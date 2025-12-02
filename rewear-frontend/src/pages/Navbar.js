@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Navbar.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 import { Badge } from "@mui/material";
 
 const Navbar = () => {
@@ -21,9 +21,7 @@ const Navbar = () => {
       try {
         const parsedUser = JSON.parse(userData);
         if (parsedUser.isAdmin) {
-          const res = await axios.get("http://localhost:5000/api/admin/pending-count", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const res = await API.get("/admin/pending-count");
           setPendingCount(res.data.count);
         }
       } catch (err) {

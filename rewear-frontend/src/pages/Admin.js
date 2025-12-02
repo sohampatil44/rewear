@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 import {
   Container,
   Typography,
@@ -49,63 +49,56 @@ function Admin() {
   useEffect(() => {
     if (!token) return;
 
-    axios
-      .get("http://localhost:5000/api/admin/items", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API
+      .get("/admin/items")
       .then((res) => setItems(res.data))
       .catch((err) => console.error(err));
 
-    axios
-      .get("http://localhost:5000/api/admin/swaps", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API
+      .get("/admin/swaps")
       .then((res) => setSwaps(res.data))
       .catch((err) => console.error(err));
 
-    axios
-      .get("http://localhost:5000/api/admin/users", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API
+      .get("/admin/users")
       .then((res) => setUsers(res.data))
       .catch((err) => console.error(err));
   }, [token]);
 
   // Approve item
   const handleApprove = (id) => {
-    axios
-      .put(`http://localhost:5000/api/admin/items/${id}/approve`, {}, { headers: { Authorization: `Bearer ${token}` } })
+    API
+      .put(`/admin/items/${id}/approve`)
       .then((res) => setItems((prev) => prev.map((i) => (i._id === id ? res.data : i))));
   };
 
   // Delete item
   const handleDelete = (id) => {
-    axios
-      .delete(`http://localhost:5000/api/admin/items/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+    API
+      .delete(`/admin/items/${id}`)
       .then(() => setItems((prev) => prev.filter((i) => i._id !== id)));
   };
 
   // Update swap status
   const handleSwapStatus = (id, status) => {
-    axios
-      .put(`http://localhost:5000/api/admin/swaps/${id}`, { status }, { headers: { Authorization: `Bearer ${token}` } })
+    API
+      .put(`/admin/swaps/${id}`, { status })
       .then((res) => setSwaps((prev) => prev.map((s) => (s._id === id ? res.data : s))));
   };
 
   // Delete user
   const handleDeleteUser = (id) => {
-    axios
-      .delete(`http://localhost:5000/api/admin/users/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+    API
+      .delete(`/admin/users/${id}`)
       .then(() => setUsers((prev) => prev.filter((u) => u._id !== id)));
   };
 
   // Toggle admin role
   const handleToggleAdmin = (id, makeAdmin) => {
-    axios
+    API
       .put(
-        `http://localhost:5000/api/admin/users/${id}/role`,
+        `/admin/users/${id}/role`,
         { isAdmin: makeAdmin },
-        { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((res) => setUsers((prev) => prev.map((u) => (u._id === id ? res.data : u))));
   };

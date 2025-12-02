@@ -1,49 +1,40 @@
 // src/pages/SwapRequest.js
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";  // ✅ ADDED
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { Container, Typography, Card, CardContent, Button, Grid } from "@mui/material";
 import { toast } from "react-toastify";
 
 const SwapRequest = () => {
-  const { itemId } = useParams(); // item to request
+  const { itemId } = useParams();
   const [item, setItem] = useState(null);
   const [myItems, setMyItems] = useState([]);
-  const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  // Fetch the requested item details
+  // ✅ Fetch the requested item details
   useEffect(() => {
     if (!itemId) return;
-    axios
-      .get(`http://localhost:5000/api/items/${itemId}`)
+
+    API.get(`/items/${itemId}`)
       .then((res) => setItem(res.data))
       .catch((err) => console.error(err));
   }, [itemId]);
 
-  // Fetch user's own items
+  // ✅ Fetch user's items
   useEffect(() => {
-    if (!token) return;
-    axios
-      .get("http://localhost:5000/api/items/my", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API.get("/items/my")
       .then((res) => setMyItems(res.data))
       .catch((err) => console.error(err));
-  }, [token]);
+  }, []);
 
+  // ✅ Send swap request
   const handleSwap = (offeredItemId) => {
-    axios
-      .post(
-        "http://localhost:5000/api/swaps",
-        {
-          itemRequested: itemId,
-          itemOffered: offeredItemId,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+    API.post("/swaps", {
+      itemRequested: itemId,
+      itemOffered: offeredItemId,
+    })
       .then(() => {
         toast.success("✅ Swap request sent!");
         navigate("/swap");
@@ -54,21 +45,25 @@ const SwapRequest = () => {
   return (
     <>
       <Navbar />
+
       <Container sx={{ mt: 12, mb: 6 }}>
         {item && (
           <>
             <Typography variant="h4" gutterBottom>
               Swap for: {item.title}
             </Typography>
+
             <Card sx={{ mb: 4 }}>
               <CardContent>
                 <img
-                  src={`http://localhost:5000${item.imageUrl}`}
+                  src={item.imageUrl}   // ✅ relative URL only
                   alt={item.title}
                   style={{ width: "200px", borderRadius: "8px" }}
                 />
                 <Typography>{item.description}</Typography>
-                <Typography color="text.secondary">Listed by {item.uploader?.name}</Typography>
+                <Typography color="text.secondary">
+                  Listed by {item.uploader?.name}
+                </Typography>
               </CardContent>
             </Card>
           </>
@@ -77,6 +72,7 @@ const SwapRequest = () => {
         <Typography variant="h5" gutterBottom>
           Choose one of your items to offer:
         </Typography>
+
         <Grid container spacing={3}>
           {myItems.length === 0 ? (
             <Typography>You don’t have any items listed yet.</Typography>
@@ -88,6 +84,7 @@ const SwapRequest = () => {
                     <Typography variant="h6">{myItem.title}</Typography>
                     <Typography>{myItem.description}</Typography>
                   </CardContent>
+
                   <Button
                     variant="contained"
                     color="primary"
@@ -101,6 +98,7 @@ const SwapRequest = () => {
           )}
         </Grid>
       </Container>
+
       <Footer />
     </>
   );

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: default
+  labels:
+    app: rewear-backend
+spec:
+  type: NodePort   # Ingress (ALB) will route to service; NodePort is okay because ALB controller targets pod IPs (target-type=ip)
+  selector:
+    app: rewear-backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001

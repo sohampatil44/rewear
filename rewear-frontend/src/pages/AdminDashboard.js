@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../services/api";
 import {
   Box,
   Drawer,
@@ -45,24 +45,15 @@ export default function AdminDashboard() {
   // Fetch data
   useEffect(() => {
     if (activePage === "items") {
-      axios
-        .get("http://localhost:5000/api/admin/items", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+      API.get("/admin/items")
         .then((res) => setItems(res.data))
         .catch((err) => console.error(err));
     } else if (activePage === "swaps") {
-      axios
-        .get("http://localhost:5000/api/admin/swaps", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+      API.get("/admin/swaps")
         .then((res) => setSwaps(res.data))
         .catch((err) => console.error(err));
     } else if (activePage === "users") {
-      axios
-        .get("http://localhost:5000/api/admin/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+      API.get("/admin/users")
         .then((res) => setUsers(res.data))
         .catch((err) => console.error(err));
     }
@@ -70,32 +61,22 @@ export default function AdminDashboard() {
 
   // Actions
   const handleApprove = (id) => {
-    axios
-      .put(`http://localhost:5000/api/admin/items/${id}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API.put(`/admin/items/${id}/approve`)
       .then((res) => {
         setItems((prev) => prev.map((i) => (i._id === id ? res.data : i)));
       });
   };
 
   const handleDelete = (id) => {
-    axios
-      .delete(`http://localhost:5000/api/admin/items/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+    API.delete(`/admin/items/${id}`)
       .then(() => {
         setItems((prev) => prev.filter((i) => i._id !== id));
       });
   };
 
   const handleSwapStatus = (id, status) => {
-    axios
-      .put(
-        `http://localhost:5000/api/admin/swaps/${id}`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+    API.put(
+      `/admin/swaps/${id}`, { status })
       .then((res) => {
         setSwaps((prev) => prev.map((s) => (s._id === id ? res.data : s)));
       });

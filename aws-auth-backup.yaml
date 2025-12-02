@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::724772062958:role/rewear-eks-cluster-eks-node-role
+      groups:
+      - system:bootstrappers
+      - system:nodes
+      username: system:node:{{EC2PrivateDNSName}}
+    - rolearn: arn:aws:iam::724772062958:user/sohampatil
+    username: terraform
+    groups:
+      - system:masters
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2025-10-28T04:53:01Z"
+  name: aws-auth
+  namespace: kube-system
+  resourceVersion: "48532"
+  uid: 4176d628-3987-48b5-87e1-0509456bdeed

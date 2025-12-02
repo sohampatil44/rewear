@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "./AddItem.css";
-import axios from "axios";
+import API from "../services/api";
 import { toast } from "react-toastify";
 
 const AddItem = () => {
@@ -42,7 +42,7 @@ const AddItem = () => {
       data.append("image", formData.image);
 
       // ✅ Send to backend
-      await axios.post("http://localhost:5000/api/items", data, {
+      await API.post("/items", data, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
