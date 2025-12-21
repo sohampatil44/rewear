@@ -9,7 +9,7 @@ on:
       - 'k8s/**'
       - '.github/workflows/ci.yaml'
   workflow_dispatch:
-        
+
 
 permissions:
   contents: write
@@ -51,9 +51,10 @@ jobs:
 
         # install yq v4
         YQ_VER="v4.39.3"
-        curl -sLo /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
+        curl -L -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64
         sudo chmod +x /usr/local/bin/yq
         yq --version
+
 
     - name: Terraform init
       working-directory: terraform
