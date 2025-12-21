@@ -51,12 +51,13 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform -version
       
-          # --- Install yq v4 ---
+          # --- Install yq v4 properly ---
           YQ_VER="v4.39.3"
-          curl -L -o yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
-          sudo mv yq /usr/local/bin/yq
+          curl -L -o /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
+          sudo mv /tmp/yq /usr/local/bin/yq
           sudo chmod +x /usr/local/bin/yq
-          yq --version
+          /usr/local/bin/yq --version
+      
       
 
 
