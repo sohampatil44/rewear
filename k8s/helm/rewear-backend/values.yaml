@@ -1,11 +1,11 @@
 replicaCount: 2
 
-frontendUrl: ""
-backendUrl: ""
+frontendUrl: "http://placeholder"
+backendUrl: "http://placeholder/api"
 
 image:
  repository: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend"
- tag: ""
+ tag: "latest"
  pullPolicy: Always
 
 
