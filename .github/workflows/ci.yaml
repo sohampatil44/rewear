@@ -40,7 +40,6 @@ jobs:
 
     - name: Install tools (terraform, yq, jq)
       run: |
-          # Update packages
           sudo apt-get update -y
           sudo apt-get install -y unzip curl jq
       
@@ -51,10 +50,10 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform -version
       
-          # --- Install yq v4 reliably ---
+          # --- Install yq v4 properly ---
           YQ_VER="v4.39.3"
           curl -L -o /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
-          # check that file is a Linux executable
+          # verify file
           file /tmp/yq
           sudo mv /tmp/yq /usr/local/bin/yq
           sudo chmod +x /usr/local/bin/yq
