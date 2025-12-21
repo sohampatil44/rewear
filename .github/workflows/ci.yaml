@@ -62,12 +62,12 @@ jobs:
 
 
     - name: Terraform init
-      working-directory: terraform
+      working-directory: .
       run: terraform init
           
 
     - name: Read Terraform outputs
-      working-directory: terraforn
+      working-directory: .
       id: tfout
       run: |
         BACKEND_URL=$(terraform output -raw backend_url)
