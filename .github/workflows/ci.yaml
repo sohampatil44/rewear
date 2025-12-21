@@ -105,11 +105,11 @@ jobs:
         aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$REGION"
         kubectl version --client
 
-    # - name: Install ArgoCD
-    #   run: |
-    #     kubectl create namespace argocd || true
-    #     kubectl apply -n argocd \
-    #       -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    - name: Install ArgoCD
+      run: |
+        kubectl create namespace argocd || true
+        kubectl apply -n argocd \
+          -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
     - name: Wait for ArgoCD to be ready
       run: |
