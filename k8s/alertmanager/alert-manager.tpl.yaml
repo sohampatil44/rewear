@@ -17,5 +17,5 @@ data:
     receivers:
       - name: "sns-webhook"
         webhook_configs:
-          - url: "__ALERT_API_URL__"
+          - url: "{{ .Values.alertmanager.webhookUrl }}"
             send_resolved: true

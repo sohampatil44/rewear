@@ -1,0 +1,42 @@
+replicaCount: 2
+
+frontendUrl: ""
+backendUrl: ""
+
+image:
+ repository: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend"
+ tag: ""
+ pullPolicy: Always
+
+
+service:
+  type: ClusterIP
+  port: 5001
+
+containerPort: 5001
+
+mongodb:
+  uriSecretName: mongo-secret
+  uriSecretKey: uri
+  mongoUser: "admin"
+
+env:
+  NODE_ENV: "production"  
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+jwtSecretName: jwt-secret
+jwtSecretKey: secretsanta    
+    
+nodeSelector: 
+  role: ec2
+tolerations: []
+affinity: {}    
+
+alertmanager:
+  webhookUrl: ""

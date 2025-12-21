@@ -116,3 +116,25 @@ output "frontend_url" {
     value = module.frontend.cf_url
   
 }
+#-----------------------------
+# TERRAFORM BACKEND
+#-----------------------------
+terraform {
+  backend "s3" {
+    bucket  = "rewear-terraform-state-soham-44"
+    key = "rewear/terraform.tfstate"
+    region  = "us-east-1"
+    dynamodb_table = "terraform-locks"
+    encrypt = true
+  }
+}
+
+
+# ----------------------------
+# NOTIFICATIONS MODULE
+# ----------------------------
+module "notifications" {
+  source = "./modules/notifications"
+  region = var.region
+  
+}

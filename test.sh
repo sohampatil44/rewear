@@ -58,7 +58,7 @@ echo "Checking for Backend CloudFront distribution..."
 BACKEND_CLOUDFRONT=""
 for i in {1..3}; do
   BACKEND_CLOUDFRONT=$(aws cloudfront list-distributions \
-    --query "DistributionList.Items[?Comment=='Backend API Cloudfront Proxy'].DomainName" \
+    --query "DistributionList.Items[?Comment=='Backend API Cloudfront Proxy'].DomainName | [0]" \
     --output text 2>/dev/null || true)
   if [ -n "$BACKEND_CLOUDFRONT" ]; then
     echo "✅ Backend CloudFront: $BACKEND_CLOUDFRONT"

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rewear-backend
+  namespace: default
+  labels:
+    app: rewear-backend
+spec:
+  replicas: {{ .Values.replicaCount | default 2}}
+  selector:
+    matchLabels:
+      app: rewear-backend
+  template:
+    metadata:
+      labels:
+        app: rewear-backend
+    spec:
+      nodeSelector:
+{{- toYaml .Values.nodeSelector | nindent 8 }}
+      containers:
+      - name: rewear-backend
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+          initialDelaySeconds: 20
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        
+
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        ports:
+        - containerPort: {{ .Values.containerPort | default 5001 }}
+          name: http
+        env:
+          - name: FRONTEND_URL
+            value: "{{ .Values.frontendUrl }}"
+          - name: BACKEND_URL
+            value: "{{ .Values.backendUrl }}"  
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mongodb.uriSecretName }}
+                key: {{ .Values.mongodb.uriSecretKey }}
+          - name: PORT
+            value: "5001"
+
+          - name: NODE_ENV
+            value: "production"
+
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.jwtSecretName }}
+                key: {{ .Values.jwtSecretKey }}
+
+          - name: AWS_S3_BUCKET
+            value: "rewear-frontend-bucket"
+     
+        resources:
+        {{- toYaml .Values.resources | nindent 10 }}
+

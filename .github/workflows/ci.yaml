@@ -1,0 +1,252 @@
+name: CI - terraform, build, push, update values.yaml, frontend sync
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'rewear-backend/**'
+      - 'rewear-frontend/**'
+      - 'k8s/**'
+      - '.github/workflows/ci.yaml'
+
+permissions:
+  contents: write
+
+env:
+  REGION: us-east-1
+  ECR_REPO_NAME: rewear-backend
+  VALUES_PATH: k8s/helm/rewear-backend/values.yaml
+
+  
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.REGION }}
+
+    - name: Install tools (terraform, yq, jq)
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y unzip curl jq
+        # terraform (pin to your desired version)
+        TF_VER="1.8.0"
+        curl -sLo terraform.zip "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip"
+        unzip -o terraform.zip
+        sudo mv terraform /usr/local/bin/
+        terraform -version
+
+        # install yq v4
+        YQ_VER="v4.39.3"
+        curl -sLo /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
+        sudo chmod +x /usr/local/bin/yq
+        yq --version
+
+    - name: Terraform init
+      working-directory: terraform
+      run: terraform init
+          
+
+    - name: Read Terraform outputs
+      working-directory: terraform
+      id: tfout
+      run: |
+        BACKEND_URL=$(terraform output -raw backend_url)
+        FRONTEND_URL=$(terraform output -raw frontend_url)
+        ALERT_URL=$(terraform output -raw alert_webhook_url)
+
+        echo "BACKEND_URL=https://${BACKEND_URL}/api" >> $GITHUB_ENV
+        echo "FRONTEND_URL=https://${FRONTEND_URL}" >> $GITHUB_ENV
+        echo "ALERT_URL=${ALERT_URL}" >> $GITHUB_ENV
+
+    - name: Wait for EKS cluster to be ACTIVE
+      id: wait-eks
+      run: |
+        CLUSTER_NAME=$(aws eks list-clusters --query "clusters[0]" --output text --region "$REGION")
+        echo "cluster=$CLUSTER_NAME" >> $GITHUB_OUTPUT
+        for i in {1..60}; do
+          status=$(aws eks describe-cluster --name "$CLUSTER_NAME" --query "cluster.status" --output text --region "$REGION" 2>/dev/null || true)
+          echo "EKS status=$status"
+          if [ "$status" = "ACTIVE" ]; then
+            echo "EKS active"
+            break
+          fi
+          sleep 10
+        done
+        echo "CLUSTER_NAME=$CLUSTER_NAME" >> $GITHUB_ENV
+
+    - name: Update kubeconfig for kubectl
+      run: |
+        aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$REGION"
+        kubectl version --client
+
+    # - name: Install ArgoCD
+    #   run: |
+    #     kubectl create namespace argocd || true
+    #     kubectl apply -n argocd \
+    #       -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+    - name: Wait for ArgoCD to be ready
+      run: |
+        kubectl rollout status deployment/argocd-server -n argocd --timeout=300s
+  
+    
+    - name: Register backend app in ArgoCD
+      run: |
+        kubectl apply -f k8s/argocd/rewear-backend-application.yaml
+
+
+    - name: Ensure ECR repository exists
+      run: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        REPO="${ACCOUNT_ID}.dkr.ecr.${{ env.REGION }}.amazonaws.com/${{ env.ECR_REPO_NAME }}"
+        aws ecr describe-repositories --repository-names "${{ env.ECR_REPO_NAME }}" >/dev/null 2>&1 || \
+          aws ecr create-repository --repository-name "${{ env.ECR_REPO_NAME }}"
+
+    - name: Determine image tag
+      id: tag
+      run: echo "tag=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+    - name: Login to ECR (Docker)
+      run: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        REPO_URL="${ACCOUNT_ID}.dkr.ecr.${{ env.REGION }}.amazonaws.com/${{ env.ECR_REPO_NAME }}"
+        aws ecr get-login-password --region ${{ env.REGION }} | docker login --username AWS --password-stdin "$REPO_URL"
+        echo "REPO_URL=$REPO_URL" >> $GITHUB_OUTPUT
+
+    - name: Build & push backend image
+      run: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        REPO_URL="${ACCOUNT_ID}.dkr.ecr.${{ env.REGION }}.amazonaws.com/${{ env.ECR_REPO_NAME }}"
+        TAG=${{ steps.tag.outputs.tag }}
+        docker buildx create --use || true
+        docker buildx build --platform linux/amd64 -t "${REPO_URL}:${TAG}" ./rewear-backend --push
+        echo "IMAGE=${REPO_URL}:${TAG}" >> $GITHUB_ENV
+
+    # - name: Wait for ALB DNS (ingress) to be ready (short loop)
+    #   run: |
+    #     ALB_DNS=""
+    #     for i in {1..60}; do
+    #       ALB_DNS=$(kubectl get ingress rewear-ingress -n default -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
+    #       if [ -n "$ALB_DNS" ]; then
+    #         echo "ALB_DNS=$ALB_DNS"
+    #         break
+    #       fi
+    #       echo "Waiting for ALB... ($i/60)"
+    #       sleep 10
+    #     done
+    #     echo "ALB_DNS=${ALB_DNS}" >> $GITHUB_ENV
+
+    # - name: Poll CloudFront distributions to compute BACKEND_URL & FRONTEND_URL
+    #   id: compute-urls
+    #   run: |
+    #     # backend CloudFront named by comment "Backend API Cloudfront Proxy" in your terraform
+    #     BACKEND_CLOUDFRONT=$(aws cloudfront list-distributions \
+    #       --query "DistributionList.Items[?Comment=='Backend API Cloudfront Proxy'].DomainName | [0]" \
+    #       --output text 2>/dev/null || true)
+
+    #     if [ -n "$BACKEND_CLOUDFRONT" ] && [ "$BACKEND_CLOUDFRONT" != "None" ]; then
+    #       BACKEND_URL="https://${BACKEND_CLOUDFRONT}/api"
+    #     elif [ -n "$ALB_DNS" ]; then
+    #       BACKEND_URL="http://${ALB_DNS}/api"
+    #     else
+    #       BACKEND_URL=""
+    #     fi
+
+    #     # frontend CloudFront: find distribution with S3 origin matching your bucket
+    #     S3_BUCKET="${{ secrets.S3_BUCKET }}"
+    #     FRONTEND_CLOUDFRONT=$(aws cloudfront list-distributions \
+    #       --query "DistributionList.Items[?Origins.Items[0].DomainName!=null && contains(Origins.Items[0].DomainName, '${S3_BUCKET}')].DomainName | [0]" \
+    #       --output text 2>/dev/null || true)
+
+    #     if [ -n "$FRONTEND_CLOUDFRONT" ] && [ "$FRONTEND_CLOUDFRONT" != "None" ]; then
+    #       FRONTEND_URL="https://${FRONTEND_CLOUDFRONT}"
+    #     else
+    #       FRONTEND_URL="http://localhost:3000"
+    #     fi
+
+    #     echo "BACKEND_URL=${BACKEND_URL}" >> $GITHUB_ENV
+    #     echo "FRONTEND_URL=${FRONTEND_URL}" >> $GITHUB_ENV
+    #     echo "Computed BACKEND_URL=${BACKEND_URL}"
+    #     echo "Computed FRONTEND_URL=${FRONTEND_URL}"
+
+    - name: Update values.yaml (image tag + dynamic URLs) and commit
+      env:
+        GIT_AUTHOR_NAME: ${{ secrets.GIT_USER_NAME }}
+        GIT_AUTHOR_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+      run: |
+        TAG=${{ steps.tag.outputs.tag }}
+        IMAGE_REPO=$(echo $IMAGE | sed -n 's/\(.*\):.*/\1/p' || true)
+        # Ensure we have the repository URL (fallback to account derived)
+        if [ -z "$IMAGE_REPO" ] || [ "$IMAGE_REPO" = "<none>" ]; then
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          IMAGE_REPO="${ACCOUNT_ID}.dkr.ecr.${{ env.REGION }}.amazonaws.com/${{ env.ECR_REPO_NAME }}"
+        fi
+
+        # safe edits using yq
+        yq e -i ".image.repository = \"${IMAGE_REPO}\"" $VALUES_PATH
+        yq e -i ".image.tag = \"${TAG}\"" $VALUES_PATH
+        yq e -i ".frontendUrl = \"${FRONTEND_URL}\"" $VALUES_PATH
+        yq e -i ".backendUrl  = \"${BACKEND_URL}\"" $VALUES_PATH
+        yq e -i ".alertmanager.webhookUrl = \"${ALERT_URL}\"" k8s/helm/rewear-backend/values.yaml
+
+
+
+        git config user.name "${GIT_AUTHOR_NAME}"
+        git config user.email "${GIT_AUTHOR_EMAIL}"
+        git add $VALUES_PATH
+        git commit -m "ci: bump image ${TAG} and set dynamic urls" || echo "no changes to commit"
+        git push origin HEAD:main
+
+    
+    - name: Build frontend
+      working-directory: rewear-frontend
+      env:
+        REACT_APP_API_URL: ${{ env.BACKEND_URL }}
+      run: |
+        npm ci
+        npm run build
+
+    - name: Sync frontend to S3
+      run: |
+        aws s3 sync rewear-frontend/build/ s3://${{ secrets.S3_BUCKET }} --delete
+
+    - name: Invalidate CloudFront (if exists)
+      run: |
+        DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[0].DomainName!=null && contains(Origins.Items[0].DomainName, '${{ secrets.S3_BUCKET }}')].Id | [0]" --output text 2>/dev/null || true)
+        if [ -n "$DIST_ID" ] && [ "$DIST_ID" != "None" ]; then
+          aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
+        else
+          echo "No CloudFront distribution found for bucket"
+        fi
+
+    # - name: Deploy monitoring stack (apply manifests now)
+    #   run: |
+    #     kubectl create namespace monitoring >/dev/null 2>&1 || true
+    #     kubectl apply -f k8s/prometheus/ -n monitoring || true
+    #     kubectl apply -f k8s/grafana/ -n monitoring || true
+
+    # - name: Install cluster-autoscaler via Helm (optional)
+    #   run: |
+    #     helm repo add autoscaler https://kubernetes.github.io/autoscaler || true
+    #     helm repo update
+    #     helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler \
+    #       --namespace kube-system \
+    #       --set autoDiscovery.clusterName="$CLUSTER_NAME" \
+    #       --set awsRegion="$REGION" \
+    #       --set rbac.create=true \
+    #       --set replicaCount=1 || true
+
+
+      

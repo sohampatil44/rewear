@@ -6,3 +6,7 @@ src/database/app.db
 !*.env.example  # Keep example files
 .DS_Store
 node_modules/
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
