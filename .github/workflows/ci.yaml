@@ -70,16 +70,16 @@ jobs:
       working-directory: .
       id: tfout
       run: |
-        BACKEND_URL=$(terraform output -raw backend_url)
+        BACKEND_URL=""
         FRONTEND_URL=$(terraform output -raw frontend_url)
         ALERT_URL=$(terraform output -raw alert_webhook_url)
 
         if terraform output -json | jq -e '.backend_url' >/dev/null 2>&1; then
          BACKEND_URL=$(terraform output -raw backend_url)
-        else
-         BACKEND_URL=""
         fi
+
         echo "BACKEND_URL=${BACKEND_URL}" >> $GITHUB_ENV
+        echo "Backend URL: $BACKEND_URL"
 
         echo "FRONTEND_URL=https://${FRONTEND_URL}" >> $GITHUB_ENV
         echo "ALERT_URL=${ALERT_URL}" >> $GITHUB_ENV
