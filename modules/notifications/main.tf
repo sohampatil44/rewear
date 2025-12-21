@@ -10,6 +10,18 @@ resource "aws_sns_topic_subscription" "email" {
 
   
 }
+data "aws_iam_policy_document" "lambda_assume" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
 
 #iam role for lambda to publish to sns topic
 resource "aws_iam_role" "lambda_exec" {
