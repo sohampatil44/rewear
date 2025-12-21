@@ -40,20 +40,25 @@ jobs:
 
     - name: Install tools (terraform, yq, jq)
       run: |
-        sudo apt-get update -y
-        sudo apt-get install -y unzip curl jq
-        # terraform (pin to your desired version)
-        TF_VER="1.8.0"
-        curl -sLo terraform.zip "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip"
-        unzip -o terraform.zip
-        sudo mv terraform /usr/local/bin/
-        terraform -version
+          # Update packages
+          sudo apt-get update -y
+          sudo apt-get install -y unzip curl jq
+      
+          # --- Install Terraform ---
+          TF_VER="1.8.0"
+          curl -L -o terraform.zip "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip"
+          unzip -o terraform.zip
+          sudo mv terraform /usr/local/bin/
+          terraform -version
+      
+          # --- Install yq v4 ---
+          YQ_VER="v4.39.3"
+          curl -L -o yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
+          sudo mv yq /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+      
 
-        # install yq v4
-        YQ_VER="v4.39.3"
-        curl -L -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64
-        sudo chmod +x /usr/local/bin/yq
-        yq --version
 
 
 
