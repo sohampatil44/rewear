@@ -63,7 +63,7 @@ jobs:
 
 
 
-    - name: Terraform init
+    - name: Terraform chinit
       working-directory: terraform
       run: terraform init
           
