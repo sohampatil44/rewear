@@ -42,23 +42,19 @@ jobs:
       run: |
           sudo apt-get update -y
           sudo apt-get install -y unzip curl jq
-      
+          
           # --- Install Terraform ---
           TF_VER="1.8.0"
           curl -L -o terraform.zip "https://releases.hashicorp.com/terraform/${TF_VER}/terraform_${TF_VER}_linux_amd64.zip"
           unzip -o terraform.zip
           sudo mv terraform /usr/local/bin/
           terraform -version
-      
-          # --- Install yq v4 properly ---
-          YQ_VER="v4.39.3"
-          curl -L -o /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
-          # verify file
-          file /tmp/yq
-          sudo mv /tmp/yq /usr/local/bin/yq
+          
+          # --- Install yq ---
+          YQ_VER="v4.40.5"
+          sudo wget -qO /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
           sudo chmod +x /usr/local/bin/yq
-          /usr/local/bin/yq --version
-      
+          yq --version
       
       
 
