@@ -51,19 +51,22 @@ jobs:
           sudo mv terraform /usr/local/bin/
           terraform -version
       
-          # --- Install yq v4 properly ---
+          # --- Install yq v4 reliably ---
           YQ_VER="v4.39.3"
           curl -L -o /tmp/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VER}/yq_linux_amd64"
+          # check that file is a Linux executable
+          file /tmp/yq
           sudo mv /tmp/yq /usr/local/bin/yq
           sudo chmod +x /usr/local/bin/yq
           /usr/local/bin/yq --version
       
       
+      
 
 
 
 
-    - name: Terraform chinit
+    - name: Terraform init
       working-directory: terraform
       run: terraform init
           
