@@ -135,6 +135,5 @@ terraform {
 # ----------------------------
 module "notifications" {
   source = "./modules/notifications"
-  region = var.region
   
 }
