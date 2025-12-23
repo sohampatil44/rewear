@@ -75,7 +75,7 @@ jobs:
         ALERT_URL=$(terraform output -raw alert_webhook_url)
 
         if terraform output -json | jq -e '.backend_cloudfront_url' >/dev/null 2>&1; then
-         BACKEND_URL="https://$(terraform output -raw backend_cloudfront_url)/api"
+         BACKEND_URL="https://$(terraform output -raw backend_cloudfront_url)"
         fi
 
         echo "BACKEND_URL=${BACKEND_URL}" >> $GITHUB_ENV
