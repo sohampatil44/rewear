@@ -227,6 +227,7 @@ jobs:
     - name: Build frontend
       working-directory: rewear-frontend
       env:
+        CI: false
         REACT_APP_API_URL: ${{ env.BACKEND_URL }}
       run: |
         npm ci
