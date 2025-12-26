@@ -10,3 +10,7 @@ output "alert_webhook_url" {
   value = module.notifications.alert_api_url
   
 }
+output "uploads_bucket_name" {
+    value = module.uploads.uploads_bucket_name
+  
+}
