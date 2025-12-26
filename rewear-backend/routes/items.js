@@ -4,25 +4,40 @@ import multer from "multer";
 import path from "path";
 import authMiddleware from "../middleware/auth.js";
 import Item from "../models/Item.js";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import multerS3 from "multer-s3";
 
 const router = express.Router();
 
-// ✅ Multer setup for image upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // make sure this folder exists
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage });
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  }
+})
 
-/**
- * @route   POST /api/items
- * @desc    Upload new item
- * @access  Private
- */
+// // ✅ Multer setup for image upload
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "uploads/"); // make sure this folder exists
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
+const upload = multer({ 
+  storage : multerS3({
+    s3,
+    bucket: process.env.AWS_UPLOADS_BUCKET,
+    acl: "public-read",
+    key: (req,file,cb) =>{
+      cb(null,Date.now().toString() + "-"+ file.originalname);
+    },
+  }),
+ });
+
+
 router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
   try {
     const { title, description, category } = req.body;
@@ -36,7 +51,7 @@ router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
       description,
       category,
       uploader: req.user.id,
-      imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
+      imageUrl: req.file.location,
       isApproved: false, // requires admin approval
     });
 

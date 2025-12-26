@@ -30,6 +30,10 @@ spec:
             secretKeyRef:
               name: mongo-secret
               key: uri
+
+        - name: AWS_S3_BUCKET
+          valueFrom:
+                  
         resources:
           requests:
             memory: "256Mi"

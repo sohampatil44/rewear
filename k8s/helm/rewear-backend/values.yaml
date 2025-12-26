@@ -31,7 +31,8 @@ resources:
     memory: 512Mi
 
 jwtSecretName: jwt-secret
-jwtSecretKey: secretsanta    
+jwtSecretKey: jwt_secret   
+
     
 nodeSelector: 
   role: ec2

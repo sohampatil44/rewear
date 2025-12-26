@@ -137,3 +137,11 @@ module "notifications" {
   source = "./modules/notifications"
   
 }
+
+# ----------------------------
+# UPLOADS BUCKET MODULE
+# ----------------------------
+module "uploads" {
+  source = "./modules/uploads"
+    
+}

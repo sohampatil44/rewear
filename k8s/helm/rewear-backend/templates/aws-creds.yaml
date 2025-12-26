@@ -1,0 +1,8 @@
+kind: Secret
+metadata:
+  name: aws-credentials
+  namespace: default
+type: Opaque
+StringData:
+  access_key_id: "ANKIA2RP6IA3XIIYJNJ5E"
+  secret_access_key: "dNRU1jC8KNwDsUyO++7l3gMxeacvye1e9BN2rcpI"

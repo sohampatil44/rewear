@@ -73,6 +73,9 @@ jobs:
         BACKEND_URL=""
         FRONTEND_URL=$(terraform output -raw frontend_url)
         ALERT_URL=$(terraform output -raw alert_webhook_url)
+        AWS_UPLOADS_BUCKET=$(terraform output -raw uploads_bucket_name) 
+        echo "AWS_UPLOADS_BUCKET=${AWS_UPLOADS_BUCKET}" >> $GITHUB_ENV
+
 
         if terraform output -json | jq -e '.backend_cloudfront_url' >/dev/null 2>&1; then
          BACKEND_URL="https://$(terraform output -raw backend_cloudfront_url)"
