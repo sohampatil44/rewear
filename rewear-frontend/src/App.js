@@ -34,6 +34,8 @@ function App() {
           <Route path="/add" element={<AddItem />} />
           <Route path="/swap" element={<Swap />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+
           <Route path="/swap-request/:itemId" element={<SwapRequest />} />
           {/* Protected Routes */}
           <Route path="/profile" element={<Profile />} />
