@@ -3,7 +3,7 @@ frontendUrl: "https://d1zdaauu493bq4.cloudfront.net"
 backendUrl: "https://dnngvazz5ia4g.cloudfront.net"
 image:
   repository: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend"
-  tag: "656c9e96"
+  tag: "3f2f9be8"
   pullPolicy: Always
 service:
   type: ClusterIP
