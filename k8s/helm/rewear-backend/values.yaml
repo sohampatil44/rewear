@@ -41,3 +41,7 @@ affinity: {}
 
 alertmanager:
   webhookUrl: ""
+
+aws:
+  accessKeyId: ""
+    
