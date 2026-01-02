@@ -52,35 +52,35 @@ router.put("/users/:id/role", authMiddleware, requireAdmin, async (req, res) => 
   } catch (err) {
     res.status(500).json({ message: "Error updating role" });
   }
-});
-
-/* ------------------------------
-   ITEMS MANAGEMENT (already present in your code)
---------------------------------*/
-// Get all items (for approval)
-router.get("/items", authMiddleware, requireAdmin, async (req, res) => {
-  try {
-    const items = await Item.find().populate("uploader", "name email");
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching items" });
-  }
-});
+  router.get("/items", authMiddleware, requireAdmin, async (req, res) => {
+    try {
+      const items = await Item.find({ isApproved: false })
+        .populate("uploader", "name email");
+      res.json(items);
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching items" });
+    }
+  });
+  
 
 // Approve item
+// routes/admin.js
 router.put("/items/:id/approve", authMiddleware, requireAdmin, async (req, res) => {
   try {
-    const item = await Item.findByIdAndUpdate(
-      req.params.id,
-      { isApproved: true },
-      { new: true }
-    ).populate("uploader", "name email");
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
 
-    res.json(item);
+    item.isApproved = true;  // ✅ set approved
+    await item.save();        // ✅ save to DB
+
+    const populatedItem = await item.populate("uploader", "name email");
+    res.json(populatedItem);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Error approving item" });
   }
 });
+
 
 // Delete item
 router.delete("/items/:id", authMiddleware, requireAdmin, async (req, res) => {

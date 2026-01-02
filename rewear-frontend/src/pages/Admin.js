@@ -67,10 +67,14 @@ function Admin() {
 
   // Approve item
   const handleApprove = (id) => {
-    API
-      .put(`/admin/items/${id}/approve`)
-      .then((res) => setItems((prev) => prev.map((i) => (i._id === id ? res.data : i))));
+    API.put(`/admin/items/${id}/approve`)
+      .then((res) => {
+        // Remove approved item from pending list
+        setItems((prev) => prev.filter((i) => i._id !== id));
+      })
+      .catch(err => console.error(err));
   };
+  
 
   // Delete item
   const handleDelete = (id) => {
