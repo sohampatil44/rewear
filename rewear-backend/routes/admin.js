@@ -52,6 +52,9 @@ router.put("/users/:id/role", authMiddleware, requireAdmin, async (req, res) => 
   } catch (err) {
     res.status(500).json({ message: "Error updating role" });
   }
+  
+  });
+
   router.get("/items", authMiddleware, requireAdmin, async (req, res) => {
     try {
       const items = await Item.find({ isApproved: false })
@@ -60,7 +63,7 @@ router.put("/users/:id/role", authMiddleware, requireAdmin, async (req, res) => 
     } catch (err) {
       res.status(500).json({ message: "Error fetching items" });
     }
-  });
+  })
   
 
 // Approve item
