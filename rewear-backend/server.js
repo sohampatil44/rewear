@@ -1,3 +1,8 @@
+app.use((req, res, next) => {
+  console.log(`➡️  ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";

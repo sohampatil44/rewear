@@ -54,23 +54,7 @@ router.post("/", authMiddleware, async (req, res) => {
  * @desc    Get all swaps for logged-in user (both incoming & outgoing)
  * @access  Private
  */
-router.get("/", authMiddleware, async (req, res) => {
-  try {
-    const swaps = await Swap.find({
-      $or: [{ fromUser: req.user.id }, { toUser: req.user.id }],
-    })
-      .populate("fromUser", "name email")
-      .populate("toUser", "name email")
-      .populate("itemRequested")
-      .populate("itemOffered")
-      .sort({ createdAt: -1 });
 
-    res.json(swaps);
-  } catch (error) {
-    console.error("Swap Fetch Error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 /**
  * @route   PUT /api/swaps/:id

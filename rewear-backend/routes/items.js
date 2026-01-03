@@ -142,16 +142,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ My Items route
-router.get("/my", authMiddleware, async (req, res) => {
-  try {
-    const items = await Item.find({ uploader: req.user.id }); // no approval filter
-    res.json(items);
-  } catch (err) {
-    console.error("Fetch My Items Error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
+
 
 
 export default router;
