@@ -1,8 +1,3 @@
-app.use((req, res, next) => {
-  console.log(`➡️  ${req.method} ${req.originalUrl}`);
-  next();
-});
-
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -17,6 +12,12 @@ import path from "path";
 
 dotenv.config();
 const app = express();
+
+app.use((req, res, next) => {
+  console.log(`➡️  ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 
 // ✅ Prometheus metrics
 const collectDefaultMetrics = client.collectDefaultMetrics;
