@@ -77,6 +77,23 @@ router.get("/approved", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+// GET single item (public or private – your choice)
+router.get("/:id", async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id)
+      .populate("uploader", "name email");
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.json(item);
+  } catch (err) {
+    console.error("Get Item Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 /**
  * @route   GET /api/items/my-items

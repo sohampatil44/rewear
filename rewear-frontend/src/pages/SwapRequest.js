@@ -24,7 +24,7 @@ const SwapRequest = () => {
 
   // ✅ Fetch user's items
   useEffect(() => {
-    API.get("/items/my")
+    API.get("/items/my-items")
       .then((res) => setMyItems(res.data))
       .catch((err) => console.error(err));
   }, []);

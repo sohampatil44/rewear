@@ -54,6 +54,17 @@ router.put("/users/:id/role", authMiddleware, requireAdmin, async (req, res) => 
   }
 });
 
+router.get("/pending-count", authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const count = await Item.countDocuments({ isApproved: false });
+    res.json({ count });
+  } catch (err) {
+    console.error("Pending Count Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 
 
   router.get("/items", authMiddleware, requireAdmin, async (req, res) => {
