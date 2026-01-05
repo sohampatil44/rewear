@@ -67,15 +67,18 @@ router.get("/pending-count", authMiddleware, requireAdmin, async (req, res) => {
 
 
 
-  router.get("/items", authMiddleware, requireAdmin, async (req, res) => {
-    try {
-      const items = await Item.find({ isApproved: false })
-        .populate("uploader", "name email");
-      res.json(items);
-    } catch (err) {
-      res.status(500).json({ message: "Error fetching items" });
-    }
-  })
+router.get("/items", authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const items = await Item.find({ isApproved: false })
+      .populate("uploader", "name email")
+      .sort({ createdAt: -1 });
+
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch items" });
+  }
+});
+
   
 
 // Approve item

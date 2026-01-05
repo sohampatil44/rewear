@@ -102,13 +102,18 @@ router.get("/:id", async (req, res) => {
  */
 router.get("/my-items", authMiddleware, async (req, res) => {
   try {
-    const items = await Item.find({ uploader: req.user.id }).sort({ createdAt: -1 });
+    const items = await Item.find({
+      uploader: req.user.id,
+      isApproved: true,   
+    }).sort({ createdAt: -1 });
+
     res.json(items);
   } catch (err) {
-    console.error("My Items Fetch Error:", err);
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 /**
  * @route   PUT /api/items/:id
