@@ -75,42 +75,42 @@ custom_error_response {
     response_code = 200
     response_page_path = "/index.html"
 }
-ordered_cache_behavior {
-  path_pattern     = "/admin/*"
-  target_origin_id = "alb-origin"
+# ordered_cache_behavior {
+#   path_pattern     = "/admin/*"
+#   target_origin_id = "alb-origin"
 
-  allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
-  cached_methods   = ["GET", "HEAD"]
+#   allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
+#   cached_methods   = ["GET", "HEAD"]
 
-  cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
-  origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+#   cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+#   origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
 
-  viewer_protocol_policy = "redirect-to-https"
-}
-ordered_cache_behavior {
-  path_pattern     = "/items/*"
-  target_origin_id = "alb-origin"
+#   viewer_protocol_policy = "redirect-to-https"
+# }
+# ordered_cache_behavior {
+#   path_pattern     = "/items/*"
+#   target_origin_id = "alb-origin"
 
-  allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
-  cached_methods   = ["GET", "HEAD"]
+#   allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
+#   cached_methods   = ["GET", "HEAD"]
 
-  cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
-  origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+#   cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+#   origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
 
-  viewer_protocol_policy = "redirect-to-https"
-}
-ordered_cache_behavior {
-  path_pattern     = "/swaps/*"
-  target_origin_id = "alb-origin"
+#   viewer_protocol_policy = "redirect-to-https"
+# }
+# ordered_cache_behavior {
+#   path_pattern     = "/swaps/*"
+#   target_origin_id = "alb-origin"
 
-  allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
-  cached_methods   = ["GET", "HEAD"]
+#   allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
+#   cached_methods   = ["GET", "HEAD"]
 
-  cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
-  origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+#   cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+#   origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
 
-  viewer_protocol_policy = "redirect-to-https"
-}
+#   viewer_protocol_policy = "redirect-to-https"
+# }
 
 
   restrictions {
