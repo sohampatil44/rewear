@@ -29,7 +29,6 @@ import {
   HourglassEmpty,
 } from "@mui/icons-material";
 
-// ✅ Import Navbar & Footer
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -42,47 +41,57 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const token = localStorage.getItem("token");
 
-  // Fetch data
-  useEffect(() => {
+  // ✅ Fetch data with dependency on activePage
+  const fetchData = () => {
     if (activePage === "items") {
       API.get("/admin/items")
         .then((res) => setItems(res.data))
-        .catch((err) => console.error(err));
+        .catch((err) => console.error("Fetch items error:", err));
     } else if (activePage === "swaps") {
       API.get("/admin/swaps")
         .then((res) => setSwaps(res.data))
-        .catch((err) => console.error(err));
+        .catch((err) => console.error("Fetch swaps error:", err));
     } else if (activePage === "users") {
       API.get("/admin/users")
         .then((res) => setUsers(res.data))
-        .catch((err) => console.error(err));
+        .catch((err) => console.error("Fetch users error:", err));
     }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [activePage, token]);
 
-  // Actions
+  // ✅ Approve item and refetch
   const handleApprove = (id) => {
     API.put(`/admin/items/${id}/approve`)
       .then((res) => {
-        setItems((prev) => prev.map((i) => (i._id === id ? res.data : i)));
-      });
+        console.log("Item approved:", res.data);
+        fetchData(); // ✅ Refetch to update UI
+      })
+      .catch((err) => console.error("Approve error:", err));
   };
 
+  // ✅ Delete item and refetch
   const handleDelete = (id) => {
     API.delete(`/admin/items/${id}`)
       .then(() => {
-        setItems((prev) => prev.filter((i) => i._id !== id));
-      });
+        console.log("Item deleted");
+        fetchData(); // ✅ Refetch to update UI
+      })
+      .catch((err) => console.error("Delete error:", err));
   };
 
+  // ✅ Update swap status and refetch
   const handleSwapStatus = (id, status) => {
-    API.put(
-      `/admin/swaps/${id}`, { status })
+    API.put(`/admin/swaps/${id}`, { status })
       .then((res) => {
-        setSwaps((prev) => prev.map((s) => (s._id === id ? res.data : s)));
-      });
+        console.log("Swap status updated:", res.data);
+        fetchData(); // ✅ Refetch to update UI
+      })
+      .catch((err) => console.error("Swap status error:", err));
   };
 
-  // Sidebar menu
   const menu = [
     { text: "Dashboard", icon: <Dashboard />, page: "dashboard" },
     { text: "Items", icon: <Inventory />, page: "items" },
@@ -93,7 +102,6 @@ export default function AdminDashboard() {
 
   return (
     <>
-      {/* ✅ Top Navbar */}
       <Navbar />
 
       <Box sx={{ display: "flex", minHeight: "80vh" }}>
@@ -144,42 +152,48 @@ export default function AdminDashboard() {
           {/* Items Page */}
           {activePage === "items" && (
             <Grid container spacing={3}>
-              {items.map((item) => (
-                <Grid item xs={12} md={6} key={item._id}>
-                  <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
-                    <CardContent>
-                      <Typography variant="h6">{item.title}</Typography>
-                      <Typography variant="body2">Uploader: {item.uploader?.name}</Typography>
-                      <Typography variant="body2">Condition: {item.condition}</Typography>
-                      {item.isApproved ? (
-                        <Chip icon={<CheckCircle />} label="Approved" color="success" sx={{ mt: 1 }} />
-                      ) : (
-                        <Chip icon={<HourglassEmpty />} label="Pending" color="warning" sx={{ mt: 1 }} />
-                      )}
-                    </CardContent>
-                    <CardActions>
-                      {!item.isApproved && (
-                        <Button
-                          startIcon={<ThumbUp />}
-                          variant="contained"
-                          color="success"
-                          onClick={() => handleApprove(item._id)}
-                        >
-                          Approve
-                        </Button>
-                      )}
-                      <Button
-                        startIcon={<Delete />}
-                        variant="outlined"
-                        color="error"
-                        onClick={() => handleDelete(item._id)}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
+              {items.length === 0 ? (
+                <Grid item xs={12}>
+                  <Typography>No items found</Typography>
                 </Grid>
-              ))}
+              ) : (
+                items.map((item) => (
+                  <Grid item xs={12} md={6} key={item._id}>
+                    <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
+                      <CardContent>
+                        <Typography variant="h6">{item.title}</Typography>
+                        <Typography variant="body2">Uploader: {item.uploader?.name}</Typography>
+                        <Typography variant="body2">Category: {item.category}</Typography>
+                        {item.isApproved ? (
+                          <Chip icon={<CheckCircle />} label="Approved" color="success" sx={{ mt: 1 }} />
+                        ) : (
+                          <Chip icon={<HourglassEmpty />} label="Pending" color="warning" sx={{ mt: 1 }} />
+                        )}
+                      </CardContent>
+                      <CardActions>
+                        {!item.isApproved && (
+                          <Button
+                            startIcon={<ThumbUp />}
+                            variant="contained"
+                            color="success"
+                            onClick={() => handleApprove(item._id)}
+                          >
+                            Approve
+                          </Button>
+                        )}
+                        <Button
+                          startIcon={<Delete />}
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          Delete
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))
+              )}
             </Grid>
           )}
 
@@ -262,7 +276,6 @@ export default function AdminDashboard() {
         </Box>
       </Box>
 
-      {/* ✅ Footer */}
       <Footer />
     </>
   );

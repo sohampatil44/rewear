@@ -1,0 +1,208 @@
+.swap-request-page {
+    min-height: 80vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .swap-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .swap-container h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 32px;
+  }
+  
+  .requested-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  }
+  
+  .requested-item h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .requested-item img {
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 12px;
+    margin: 15px 0;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .requested-item p {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+  
+  .swap-form h3 {
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-size: 22px;
+    text-align: center;
+  }
+  
+  .my-items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .item-card {
+    border: 3px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: white;
+    position: relative;
+  }
+  
+  .item-card:hover {
+    border-color: #667eea;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+  }
+  
+  .item-card.selected {
+    border-color: #4caf50;
+    background: #f1f8f4;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+  }
+  
+  .item-card input[type="radio"] {
+    margin-bottom: 12px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #4caf50;
+  }
+  
+  .item-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .item-card p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #2c3e50;
+  }
+  
+  .item-category {
+    font-size: 14px;
+    color: #7f8c8d;
+    font-style: italic;
+  }
+  
+  .submit-swap-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  
+  .submit-swap-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+  
+  .submit-swap-btn:active {
+    transform: translateY(0);
+  }
+  
+  .no-items {
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .no-items p {
+    font-size: 18px;
+    color: #2d3436;
+    margin-bottom: 15px;
+  }
+  
+  .no-items button {
+    margin-top: 15px;
+    padding: 12px 30px;
+    background: #0984e3;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .no-items button:hover {
+    background: #0770c9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
+  }
+  
+  .back-btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: #95a5a6;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.3s ease;
+  }
+  
+  .back-btn:hover {
+    background: #7f8c8d;
+    transform: translateY(-2px);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .swap-container {
+      padding: 20px;
+    }
+  
+    .my-items-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+  
+    .requested-item img {
+      max-width: 100%;
+    }
+  }

@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import authMiddleware from "../middleware/auth.js";
 import Item from "../models/Item.js";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import multerS3 from "multer-s3";
 
 const router = express.Router();
@@ -15,50 +15,34 @@ const s3 = new S3Client({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   }
-})
+});
 
-// // ✅ Multer setup for image upload
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads/"); // make sure this folder exists
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + path.extname(file.originalname));
-//   },
-// });
 const upload = multer({ 
-  storage : multerS3({
+  storage: multerS3({
     s3,
     bucket: process.env.AWS_UPLOADS_BUCKET,
-    // acl: "public-read",
-    key: (req,file,cb) =>{
-      cb(null,Date.now().toString() + "-"+ file.originalname);
+    key: (req, file, cb) => {
+      cb(null, Date.now().toString() + "-" + file.originalname);
     },
   }),
- });
+});
 
-
-router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
+// ✅ FIX: Move /my-items BEFORE /:id to prevent route collision
+/**
+ * @route   GET /api/items/my-items
+ * @desc    Get all items uploaded by logged-in user
+ * @access  Private
+ */
+router.get("/my-items", authMiddleware, async (req, res) => {
   try {
-    const { title, description, category } = req.body;
-
-    if (!title || !description || !category) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const newItem = new Item({
-      title,
-      description,
-      category,
+    const items = await Item.find({
       uploader: req.user.id,
-      imageUrl: req.file.location,
-      isApproved: false, // requires admin approval
-    });
+      isApproved: true,   
+    }).sort({ createdAt: -1 });
 
-    await newItem.save();
-    res.status(201).json(newItem);
-  } catch (error) {
-    console.error("Add Item Error:", error);
+    res.json(items);
+  } catch (err) {
+    console.error("My Items Error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -77,7 +61,12 @@ router.get("/approved", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-// GET single item (public or private – your choice)
+
+/**
+ * @route   GET /api/items/:id
+ * @desc    Get single item
+ * @access  Public
+ */
 router.get("/:id", async (req, res) => {
   try {
     const item = await Item.findById(req.params.id)
@@ -94,26 +83,35 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
 /**
- * @route   GET /api/items/my-items
- * @desc    Get all items uploaded by logged-in user
+ * @route   POST /api/items
+ * @desc    Add new item (requires admin approval)
  * @access  Private
  */
-router.get("/my-items", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
   try {
-    const items = await Item.find({
-      uploader: req.user.id,
-      isApproved: true,   
-    }).sort({ createdAt: -1 });
+    const { title, description, category } = req.body;
 
-    res.json(items);
-  } catch (err) {
-    console.error(err);
+    if (!title || !description || !category) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const newItem = new Item({
+      title,
+      description,
+      category,
+      uploader: req.user.id,
+      imageUrl: req.file.location,
+      isApproved: false,
+    });
+
+    await newItem.save();
+    res.status(201).json(newItem);
+  } catch (error) {
+    console.error("Add Item Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 /**
  * @route   PUT /api/items/:id
@@ -163,8 +161,5 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
-
-
 
 export default router;

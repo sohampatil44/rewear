@@ -17,20 +17,18 @@ router.post("/", authMiddleware, async (req, res) => {
     const { itemRequested, itemOffered } = req.body;
 
     if (!itemRequested || !itemOffered) {
-      return res.status(400).json({ message: "Both itemRequested and itemOffered are required" });
+      return res.status(400).json({ message: "Both items are required" });
     }
 
-    // Fetch items
     const requestedItem = await Item.findById(itemRequested).populate("uploader");
     const offeredItem = await Item.findById(itemOffered).populate("uploader");
 
     if (!requestedItem || !offeredItem) {
-      return res.status(404).json({ message: "One or both items not found" });
+      return res.status(404).json({ message: "Item not found" });
     }
 
-    // Prevent user from swapping with own item
     if (requestedItem.uploader._id.toString() === req.user.id) {
-      return res.status(400).json({ message: "You cannot request swap for your own item" });
+      return res.status(400).json({ message: "You cannot swap with your own item" });
     }
 
     const swap = new Swap({
@@ -39,6 +37,7 @@ router.post("/", authMiddleware, async (req, res) => {
       itemRequested,
       itemOffered,
       status: "pending",
+      isAdminApproved: false,
     });
 
     await swap.save();
@@ -51,10 +50,26 @@ router.post("/", authMiddleware, async (req, res) => {
 
 /**
  * @route   GET /api/swaps
- * @desc    Get all swaps for logged-in user (both incoming & outgoing)
+ * @desc    Get all swaps for logged-in user (incoming & outgoing)
  * @access  Private
  */
+router.get("/", authMiddleware, async (req, res) => {
+  try {
+    const swaps = await Swap.find({
+      $or: [{ fromUser: req.user.id }, { toUser: req.user.id }]
+    })
+      .populate("fromUser", "name email")
+      .populate("toUser", "name email")
+      .populate("itemOffered", "title imageUrl")
+      .populate("itemRequested", "title imageUrl")
+      .sort({ createdAt: -1 });
 
+    res.json(swaps);
+  } catch (error) {
+    console.error("Get Swaps Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 /**
  * @route   PUT /api/swaps/:id
@@ -87,43 +102,6 @@ router.put("/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Create a new swap request
-router.post("/", authMiddleware, async (req, res) => {
-  try {
-    const { itemRequested, itemOffered } = req.body;
-
-    if (!itemRequested || !itemOffered) {
-      return res.status(400).json({ message: "Both items are required" });
-    }
-
-    const requestedItem = await Item.findById(itemRequested).populate("uploader");
-    const offeredItem = await Item.findById(itemOffered).populate("uploader");
-
-    if (!requestedItem || !offeredItem) {
-      return res.status(404).json({ message: "Item not found" });
-    }
-
-    if (requestedItem.uploader._id.toString() === req.user.id) {
-      return res.status(400).json({ message: "You cannot swap with your own item" });
-    }
-
-    const swap = new Swap({
-      fromUser: req.user.id,
-      toUser: requestedItem.uploader._id,
-      itemRequested,
-      itemOffered,
-      status: "pending",        // ✅ default
-      isAdminApproved: false,   // ✅ must be approved by admin first
-    });
-
-    await swap.save();
-    res.status(201).json(swap);
-  } catch (error) {
-    console.error("Swap Create Error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
 /**
  * @route   PUT /api/swaps/:id/approve
  * @desc    Admin approves a swap & transfer points
@@ -149,10 +127,7 @@ router.put("/:id/approve", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "Not enough points" });
     }
 
-    // Deduct points from requester
     requester.points -= swap.pointsUsed;
-
-    // Add points to admin
     admin.points += swap.pointsUsed;
 
     await requester.save();
