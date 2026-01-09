@@ -1,3 +1,6 @@
+data "aws_cloudfront_cache_policy" "caching_optimized" {
+  name = "Managed-CachingOptimized"
+}
 
 resource "aws_s3_bucket" "frontend" {
   bucket = "rewear-frontend-bucket"
@@ -59,9 +62,6 @@ resource "aws_cloudfront_distribution" "frontend" {
   cached_methods   = ["GET", "HEAD"]
 
   cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimized.id
-}
-data "aws_cloudfront_cache_policy" "caching_optimized" {
-  name = "Managed-CachingOptimized"
 }
 
 
