@@ -1,3 +1,4 @@
+
 resource "aws_s3_bucket" "frontend" {
   bucket = "rewear-frontend-bucket"
 
@@ -50,20 +51,67 @@ resource "aws_cloudfront_distribution" "frontend" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
 
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-rewear-frontend-bucket"
+ default_cache_behavior {
+  target_origin_id       = "S3-rewear-frontend-bucket"
+  viewer_protocol_policy = "redirect-to-https"
 
-    viewer_protocol_policy = "redirect-to-https"
+  allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+  cached_methods   = ["GET", "HEAD"]
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
-  }
+  cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimized.id
+}
+data "aws_cloudfront_cache_policy" "caching_optimized" {
+  name = "Managed-CachingOptimized"
+}
+
+
+  custom_error_response {
+    error_code       = 403
+    response_code = 200
+    response_page_path = "/index.html"
+}
+custom_error_response {
+    error_code       = 404
+    response_code = 200
+    response_page_path = "/index.html"
+}
+ordered_cache_behavior {
+  path_pattern     = "/admin/*"
+  target_origin_id = "alb-origin"
+
+  allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
+  cached_methods   = ["GET", "HEAD"]
+
+  cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+  origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+
+  viewer_protocol_policy = "redirect-to-https"
+}
+ordered_cache_behavior {
+  path_pattern     = "/items/*"
+  target_origin_id = "alb-origin"
+
+  allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
+  cached_methods   = ["GET", "HEAD"]
+
+  cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+  origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+
+  viewer_protocol_policy = "redirect-to-https"
+}
+ordered_cache_behavior {
+  path_pattern     = "/swaps/*"
+  target_origin_id = "alb-origin"
+
+  allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
+  cached_methods   = ["GET", "HEAD"]
+
+  cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+  origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
+
+  viewer_protocol_policy = "redirect-to-https"
+}
+
 
   restrictions {
     geo_restriction {
@@ -80,68 +128,78 @@ resource "aws_cloudfront_distribution" "frontend" {
     Environment = "Dev"
   }
 }
-# Get the ALB DNS of your backend Ingress (from EKS)
-data "kubernetes_ingress_v1" "backend_ingress" {
-  metadata {
-    name      = "rewear-ingress"
-    namespace = "default"
-  }
+data "aws_cloudfront_cache_policy" "caching_disabled" {
+  name = "Managed-CachingDisabled"
+}
+data "aws_cloudfront_origin_request_policy" "all_viewer" {
+  name = "Managed-AllViewerExceptHostHeader"
 }
 
-# CloudFront distribution for backend API
-resource "aws_cloudfront_distribution" "backend" {
-  origin {
-    domain_name = data.kubernetes_ingress_v1.backend_ingress.status[0].load_balancer[0].ingress[0].hostname
-    origin_id   = "backend-origin"
 
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
-  }
 
-  enabled             = true
-  is_ipv6_enabled     = true
-  comment             = "Backend API Cloudfront Proxy"
-  default_root_object = ""
+# # Get the ALB DNS of your backend Ingress (from EKS)
+# data "kubernetes_ingress_v1" "backend_ingress" {
+#   metadata {
+#     name      = "rewear-ingress"
+#     namespace = "default"
+#   }
+# }
 
-  default_cache_behavior {
-    target_origin_id       = "backend-origin"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"]
-    cached_methods         = ["GET", "HEAD", "OPTIONS"]
+# # CloudFront distribution for backend API
+# resource "aws_cloudfront_distribution" "backend" {
+#   origin {
+#     domain_name = data.kubernetes_ingress_v1.backend_ingress.status[0].load_balancer[0].ingress[0].hostname
+#     origin_id   = "backend-origin"
 
-    forwarded_values {
-      query_string = true
-      headers      = ["*"]
-      cookies {
-        forward = "all"
-      }
-    }
-  }
+#     custom_origin_config {
+#       http_port              = 80
+#       https_port             = 443
+#       origin_protocol_policy = "https-only"
+#       origin_ssl_protocols   = ["TLSv1.2"]
+#     }
+#   }
 
-  price_class = "PriceClass_100"
+#   enabled             = true
+#   is_ipv6_enabled     = true
+#   comment             = "Backend API Cloudfront Proxy"
+#   default_root_object = ""
 
-  restrictions {
-    geo_restriction {
-      restriction_type = "none"
-    }
-  }
 
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
+#   default_cache_behavior {
+#     target_origin_id       = "backend-origin"
+#     viewer_protocol_policy = "redirect-to-https"
+#     allowed_methods        = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"]
+#     cached_methods         = ["GET", "HEAD", "OPTIONS"]
 
-  tags = {
-    Name        = "rewear-backend-cf"
-    Environment = "Dev"
-  }
-}
+#     forwarded_values {
+#       query_string = true
+#       headers      = ["*"]
+#       cookies {
+#         forward = "all"
+#       }
+#     }
+#   }
 
-# Output CloudFront domain
-output "backend_cloudfront_domain" {
-  value = aws_cloudfront_distribution.backend.domain_name
-}
+#   price_class = "PriceClass_100"
+
+#   restrictions {
+#     geo_restriction {
+#       restriction_type = "none"
+#     }
+#   }
+
+#   viewer_certificate {
+#     cloudfront_default_certificate = true
+#   }
+
+#   tags = {
+#     Name        = "rewear-backend-cf"
+#     Environment = "Dev"
+#   }
+# }
+
+# # Output CloudFront domain
+# output "backend_cloudfront_domain" {
+#   value = aws_cloudfront_distribution.backend.domain_name
+# }
 
