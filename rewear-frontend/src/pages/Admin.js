@@ -51,16 +51,19 @@ function Admin() {
     
     setLoading(true);
     try {
+      // ✅ Add timestamp to bust cache
+      const timestamp = Date.now();
+      
       const [itemsRes, swapsRes, usersRes] = await Promise.all([
-        API.get("/admin/items"),
-        API.get("/admin/swaps"),
-        API.get("/admin/users"),
+        API.get(`/admin/items?_=${timestamp}`),
+        API.get(`/admin/swaps?_=${timestamp}`),
+        API.get(`/admin/users?_=${timestamp}`),
       ]);
-
+  
       console.log("✅ Items fetched:", itemsRes.data);
       console.log("✅ Swaps fetched:", swapsRes.data);
       console.log("✅ Users fetched:", usersRes.data);
-
+  
       setItems(itemsRes.data);
       setSwaps(swapsRes.data);
       setUsers(usersRes.data);
@@ -71,7 +74,6 @@ function Admin() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, [token]);
@@ -80,12 +82,23 @@ function Admin() {
   const handleApprove = async (id) => {
     try {
       console.log("🔄 Approving item:", id);
+     
+      // ✅ FORCE immediate UI update
+      setItems(prevItems => 
+        prevItems.map(item => 
+          item._id === id 
+            ? { ...item, isApproved: true }
+            : item
+        )
+      );
       const res = await API.put(`/admin/items/${id}/approve`);
       console.log("✅ Item approved:", res.data);
       toast.success("Item approved successfully!");
       
-      // ✅ Refetch all items to update the list
-      fetchData();
+      
+      // ✅ Also refetch to ensure data consistency
+      await fetchData();
+      
     } catch (err) {
       console.error("❌ Approve error:", err);
       toast.error(err.response?.data?.message || "Failed to approve item");
