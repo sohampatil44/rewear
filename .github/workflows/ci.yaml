@@ -123,6 +123,12 @@ jobs:
       run: |
         kubectl apply -f k8s/argocd/rewear-backend-application.yaml
 
+    - name: Register monitoring app in ArgoCD
+      run: |
+        kubectl create namespace monitoring || true
+        kubectl apply -f k8s/argocd/monitoring-application.yaml
+    
+
 
     - name: Ensure ECR repository exists
       run: |
