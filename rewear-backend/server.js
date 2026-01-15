@@ -60,6 +60,11 @@ app.use("/admin", adminRoutes);     // ✅ Admin routes
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
 
 mongoose
   .connect(process.env.MONGO_URI, {
