@@ -1,27 +1,20 @@
 replicaCount: 2
-
-frontendUrl: "http://placeholder"
-backendUrl: "http://placeholder/api"
-
+frontendUrl: "https://d1pqjauahyl5uq.cloudfront.net"
+backendUrl: "https://d1tpislncu9w9l.cloudfront.net"
 image:
- repository: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend"
- tag: "latest"
- pullPolicy: Always
-
-
+  repository: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend"
+  tag: "6abc67c8"
+  pullPolicy: Always
 service:
   type: ClusterIP
   port: 5001
-
 containerPort: 5001
-
 mongodb:
   uriSecretName: mongo-secret
   uriSecretKey: uri
   mongoUser: "admin"
-
 env:
-  NODE_ENV: "production"  
+  NODE_ENV: "production"
 resources:
   requests:
     cpu: 200m
@@ -29,19 +22,13 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
-
 jwtSecretName: jwt-secret
-jwtSecretKey: jwt_secret   
-
-    
-nodeSelector: 
+jwtSecretKey: jwt_secret
+nodeSelector:
   role: ec2
 tolerations: []
-affinity: {}    
-
+affinity: {}
 alertmanager:
-  webhookUrl: ""
-
+  webhookUrl: "https://cr6dv3ex64.execute-api.us-east-1.amazonaws.com/dev/alert"
 aws:
   accessKeyId: ""
-    
