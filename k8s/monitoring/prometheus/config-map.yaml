@@ -50,7 +50,4 @@ data:
             action: keep
             regex: true
 
-      # Scrape custom app metrics (if backend exposes /metrics)
-      - job_name: 'rewear-backend'
-        static_configs:
-          - targets: ['backend-service.default.svc.cluster.local:80']
+
