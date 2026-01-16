@@ -1,0 +1,2 @@
+agentic-devops-brain.ipynb
+vectorstore/chroma.sqlite3
