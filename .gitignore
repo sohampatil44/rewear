@@ -11,3 +11,5 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfvars
 vectorstore/chroma.sqlite3
+vectorstore/chroma.sqlite3
+agentic-devops-brain.ipynb
