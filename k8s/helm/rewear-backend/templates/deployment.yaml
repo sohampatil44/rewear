@@ -6,7 +6,7 @@ metadata:
   labels:
     app: rewear-backend
 spec:
-  replicas: {{ .Values.replicaCount | default 2}}
+  replicas: {{ .Values.replicaCount | default 2 }}
   selector:
     matchLabels:
       app: rewear-backend
@@ -21,6 +21,7 @@ spec:
       - name: rewear-backend
         livenessProbe:
           httpGet:
+          
             path: /health
             port: 5001
           initialDelaySeconds: 20

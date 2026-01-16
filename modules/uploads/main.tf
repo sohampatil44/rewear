@@ -1,14 +1,20 @@
 resource "aws_s3_bucket" "rewear_uploads" {
     bucket = "rewear-uploads-bucket"
 
-    versioning {
-        enabled = true
-    }
+    
 
     tags = {
         Name = "RewearUploads"
         Environment = "Production"
     }
+  
+}
+resource "aws_s3_bucket_versioning" "versioning" {
+    bucket = aws_s3_bucket.rewear_uploads.id
+    versioning_configuration {
+        status = "Enabled"
+    }
+
   
 }
 resource "aws_s3_bucket_public_access_block" "uploads_public_access" {
