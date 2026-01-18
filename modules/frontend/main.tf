@@ -138,68 +138,68 @@ data "aws_cloudfront_origin_request_policy" "all_viewer" {
 
 
 # Get the ALB DNS of your backend Ingress (from EKS)
-data "kubernetes_ingress_v1" "backend_ingress" {
-  metadata {
-    name      = "rewear-ingress"
-    namespace = "default"
-  }
-}
+# data "kubernetes_ingress_v1" "backend_ingress" {
+#   metadata {
+#     name      = "rewear-ingress"
+#     namespace = "default"
+#   }
+# }
 
-# CloudFront distribution for backend API
-resource "aws_cloudfront_distribution" "backend" {
-  origin {
-    domain_name = data.kubernetes_ingress_v1.backend_ingress.status[0].load_balancer[0].ingress[0].hostname
-    origin_id   = "backend-origin"
+# # CloudFront distribution for backend API
+# resource "aws_cloudfront_distribution" "backend" {
+#   origin {
+#     domain_name = data.kubernetes_ingress_v1.backend_ingress.status[0].load_balancer[0].ingress[0].hostname
+#     origin_id   = "backend-origin"
 
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
-  }
+#     custom_origin_config {
+#       http_port              = 80
+#       https_port             = 443
+#       origin_protocol_policy = "https-only"
+#       origin_ssl_protocols   = ["TLSv1.2"]
+#     }
+#   }
 
-  enabled             = true
-  is_ipv6_enabled     = true
-  comment             = "Backend API Cloudfront Proxy"
-  default_root_object = ""
+#   enabled             = true
+#   is_ipv6_enabled     = true
+#   comment             = "Backend API Cloudfront Proxy"
+#   default_root_object = ""
 
 
-  default_cache_behavior {
-    target_origin_id       = "backend-origin"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"]
-    cached_methods         = ["GET", "HEAD", "OPTIONS"]
+#   default_cache_behavior {
+#     target_origin_id       = "backend-origin"
+#     viewer_protocol_policy = "redirect-to-https"
+#     allowed_methods        = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"]
+#     cached_methods         = ["GET", "HEAD", "OPTIONS"]
 
-    forwarded_values {
-      query_string = true
-      headers      = ["*"]
-      cookies {
-        forward = "all"
-      }
-    }
-  }
+#     forwarded_values {
+#       query_string = true
+#       headers      = ["*"]
+#       cookies {
+#         forward = "all"
+#       }
+#     }
+#   }
 
-  price_class = "PriceClass_100"
+#   price_class = "PriceClass_100"
 
-  restrictions {
-    geo_restriction {
-      restriction_type = "none"
-    }
-  }
+#   restrictions {
+#     geo_restriction {
+#       restriction_type = "none"
+#     }
+#   }
 
-  viewer_certificate {
-    cloudfront_default_certificate = true
-  }
+#   viewer_certificate {
+#     cloudfront_default_certificate = true
+#   }
 
-  tags = {
-    Name        = "rewear-backend-cf"
-    Environment = "Dev"
-  }
-}
+#   tags = {
+#     Name        = "rewear-backend-cf"
+#     Environment = "Dev"
+#   }
+# }
 
-# Output CloudFront domain
-output "backend_cloudfront_domain" {
-  value = aws_cloudfront_distribution.backend.domain_name
-}
+# # Output CloudFront domain
+# output "backend_cloudfront_domain" {
+#   value = aws_cloudfront_distribution.backend.domain_name
+# }
 

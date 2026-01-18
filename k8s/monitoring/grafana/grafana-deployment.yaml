@@ -18,14 +18,30 @@ spec:
         image: grafana/grafana:10.0.3
         ports:
         - containerPort: 3000
+
         volumeMounts:
         - name: grafana-storage
           mountPath: /var/lib/grafana
+
+        # datasources.yaml ONLY
         - name: grafana-dashboards
-          mountPath: /etc/grafana/provisioning
+          mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+          subPath: datasources.yaml
+
+        # dashboards.yaml ONLY
+        - name: grafana-dashboards
+          mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
+          subPath: dashboards.yaml
+
+        # pod-metrics.json ONLY
+        - name: grafana-dashboards
+          mountPath: /var/lib/grafana/dashboards/pod-metrics.json
+          subPath: pod-metrics.json
+
       volumes:
       - name: grafana-storage
         emptyDir: {}
+
       - name: grafana-dashboards
         configMap:
           name: grafana-dashboards

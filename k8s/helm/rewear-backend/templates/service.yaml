@@ -8,7 +8,7 @@ metadata:
     app: rewear-backend
   annotations:
     prometheus.io/scrape: "true"         
-    prometheus.io/port: "80"              
+    prometheus.io/port: "5001"              
     prometheus.io/path: "/metrics"        
   type: NodePort   # Ingress (ALB) will route to service; NodePort is okay because ALB controller targets pod IPs (target-type=ip)
   selector:
