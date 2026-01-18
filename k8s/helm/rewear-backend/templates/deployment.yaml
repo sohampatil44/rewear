@@ -21,7 +21,7 @@ spec:
       - name: rewear-backend
         livenessProbe:
           httpGet:
-          
+
             path: /health
             port: 5001
           initialDelaySeconds: 20
