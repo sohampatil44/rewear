@@ -17,6 +17,11 @@ data:
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
+      - job_name: "rewear-backend"
+        static_configs:
+          - targets:
+              - backend-service.default.svc.cluster.local:80
+    
 
       # Scrape all Kubernetes nodes
       - job_name: 'kubernetes-nodes'
