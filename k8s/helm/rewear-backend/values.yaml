@@ -7,7 +7,7 @@ image:
   pullPolicy: Always
 service:
   enabled: true
-  type: ClusterIP
+  type: NodePort
   port: 80
 containerPort: 5001
 mongodb:
