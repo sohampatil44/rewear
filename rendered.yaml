@@ -1,0 +1,159 @@
+---
+# Source: rewear-backend/templates/jwt-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jwt-secret
+  namespace: default
+type: Opaque  
+stringData:
+  jwt_secret: "secretsanta"
+---
+# Source: rewear-backend/templates/mongo-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongo-secret
+  namespace: default
+type: Opaque
+stringData:
+  uri: "mongodb+srv://soham44:chiulate1@reweardb.lsb0bpg.mongodb.net/?retryWrites=true&w=majority&appName=reweardb"
+---
+# Source: rewear-backend/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: default
+  labels:
+    app: rewear-backend
+  annotations:
+    prometheus.io/scrape: "true"         
+    prometheus.io/port: "80"              
+    prometheus.io/path: "/metrics"        
+  type: NodePort   # Ingress (ALB) will route to service; NodePort is okay because ALB controller targets pod IPs (target-type=ip)
+  selector:
+    app: rewear-backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5001
+---
+# Source: rewear-backend/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rewear-backend
+  namespace: default
+  labels:
+    app: rewear-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rewear-backend
+  template:
+    metadata:
+      labels:
+        app: rewear-backend
+    spec:
+      nodeSelector:
+        role: ec2
+      containers:
+      - name: rewear-backend
+        livenessProbe:
+          httpGet:
+
+            path: /health
+            port: 5001
+          initialDelaySeconds: 20
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+        image: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend:6abc67c8"
+        
+
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5001
+          name: http
+        env:
+          - name: FRONTEND_URL
+            value: "https://d1pqjauahyl5uq.cloudfront.net"
+          - name: BACKEND_URL
+            value: "https://d1tpislncu9w9l.cloudfront.net"  
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: uri
+          - name: PORT
+            value: "5001"
+
+          - name: NODE_ENV
+            value: "production"
+
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: jwt-secret
+                key: jwt_secret
+
+          - name: AWS_S3_BUCKET
+            value: "rewear-frontend-bucket"
+
+          - name: AWS_UPLOADS_BUCKET
+            value: "rewear-uploads-bucket"  
+
+          - name: AWS_REGION
+            value: "us-east-1"
+
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: AWS_ACCESS_KEY_ID   
+
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: AWS_SECRET_ACCESS_KEY         
+     
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi
+---
+# Source: rewear-backend/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rewear-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 80

@@ -8,7 +8,7 @@ image:
 service:
   enabled: true
   type: ClusterIP
-  port: 5001
+  port: 80
 containerPort: 5001
 mongodb:
   uriSecretName: mongo-secret
@@ -25,6 +25,7 @@ resources:
     memory: 512Mi
 jwtSecretName: jwt-secret
 jwtSecretKey: jwt_secret
+
 nodeSelector:
   role: ec2
 tolerations: []

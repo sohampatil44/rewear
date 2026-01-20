@@ -15,5 +15,5 @@ metadata:
     app: rewear-backend
   ports:
     - name: http
-      port: 80
-      targetPort: 5001
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.containerPort }}
