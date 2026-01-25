@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cluster-autoscaler
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://kubernetes.github.io/autoscaler
+    chart: cluster-autoscaler
+    targetRevision: 9.37.0
+    helm:
+      values: |
+        autoDiscovery:
+          clusterName: rewear-eks-cluster
+
+        awsRegion: us-east-1
+
+        rbac:
+          serviceAccount:
+            create: true
+            name: cluster-autoscaler
+            annotations:
+              eks.amazonaws.com/role-arn: arn:aws:iam::724772062958:role/rewear-eks-cluster-cluster-autoscaler-irsa
+
+        extraArgs:
+          balance-similar-node-groups: "true"
+          skip-nodes-with-system-pods: "false"
+          expander: least-waste
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

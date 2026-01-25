@@ -127,6 +127,11 @@ jobs:
       run: |
         kubectl create namespace monitoring || true
         kubectl apply -f k8s/argocd/monitoring-application.yaml
+
+    - name: Register cluster-autoscaler in ArgoCD
+      run: |
+        kubectl create namespace monitoring || true
+        kubectl apply -f k8s/argocd/cluster-autoscaler.yaml    
     
 
 
@@ -137,12 +142,7 @@ jobs:
         aws ecr describe-repositories --repository-names "${{ env.ECR_REPO_NAME }}" >/dev/null 2>&1 || \
           aws ecr create-repository --repository-name "${{ env.ECR_REPO_NAME }}"
     
-    - name: Create / Update AWS credentials secret
-      run: |
-        kubectl delete secret aws-credentials --ignore-not-found
-        kubectl create secret generic aws-credentials \
-        --from-literal=AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-        --from-literal=AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    
               
     - name: Determine image tag
       id: tag

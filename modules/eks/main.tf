@@ -27,10 +27,7 @@ resource "aws_iam_role" "eks_node_role" {
 }
 
 # Attach required policies
-resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
-  role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-}
+
 resource "aws_iam_role_policy_attachment" "eks_worker_scaling_policy" {
     role = aws_iam_role.eks_node_role.name
     policy_arn = "arn:aws:iam::aws:policy/AutoScalingFullAccess"
@@ -62,7 +59,7 @@ resource "aws_iam_role_policy_attachment" "eks_AmazonEKSServicePolicy" {
 }
 resource "aws_iam_role_policy_attachment" "cluster_autoscaler_policy_attachment" {
   policy_arn = aws_iam_policy.cluster_autoscaler.arn
-  role       = aws_iam_role.eks_node_role.name
+  role       = aws_iam_role.cluster_autoscaler_irsa.name
 }
 
 # Managed node group
@@ -75,7 +72,7 @@ resource "aws_eks_node_group" "ec2_workers" {
   scaling_config {
     desired_size = 2
     min_size     = 1
-    max_size     = 5
+    max_size     = 10
   }
 
   labels = {
@@ -125,4 +122,40 @@ data "aws_eks_cluster" "eks_cluster" {
 
 data "aws_eks_cluster_auth" "eks_cluster" {
   name = aws_eks_cluster.eks_cluster.name
+}
+
+#Enable OIDC ISSUER FOR EKS
+
+resource "aws_iam_openid_connect_provider" "eks_oidc" {
+  url = data.aws_eks_cluster.eks.identity[0].oidc[0].issuer
+
+  client_id_list = [
+    "sts.amazonaws.com"
+  ]
+
+  thumbprint_list = [
+    "9e99a48a9960b14926bb7f3b02e22da0afd10df6"
+  ]
+}
+resource "aws_iam_role" "cluster_autoscaler_irsa" {
+  name = "${var.cluster_name}-cluster-autoscaler-irsa"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "sts:AssumeRoleWithWebIdentity"
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.eks_oidc.arn
+      }
+      Condition = {
+        StringEquals = {
+          "${replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" =
+          "system:serviceaccount:kube-system:cluster-autoscaler",
+          "${replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")}:aud" =
+          "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
 }

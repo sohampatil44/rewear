@@ -126,79 +126,29 @@ data "aws_lb" "rewear_alb" {
 }
 
 # -----------------------------
-# Lambda@Edge for CORS (us-east-1)
+# CloudFront CORS (REPLACEMENT for Lambda@Edge)
 # -----------------------------
-provider "aws" {
-  alias  = "us_east_1"
-  region = "us-east-1"
-}
+resource "aws_cloudfront_response_headers_policy" "cors_policy" {
+  name = "rewear-backend-cors-policy"
 
-data "aws_iam_policy_document" "lambda_assume" {
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com", "edgelambda.amazonaws.com"]
+  cors_config {
+    access_control_allow_credentials = false
+
+    access_control_allow_headers {
+      items = ["*"]
     }
-    actions = ["sts:AssumeRole"]
-  }
-}
 
-resource "aws_iam_role" "lambda_edge" {
-  provider           = aws.us_east_1
-  name               = "cloudfront-cors-lambda-edge"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_edge_basic" {
-  provider   = aws.us_east_1
-  role       = aws_iam_role.lambda_edge.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  output_path = "${path.module}/cors-lambda.zip"
-
-  source {
-    content  = <<EOF
-exports.handler = async (event) => {
-    const response = event.Records[0].cf.response;
-    const request = event.Records[0].cf.request;
-    const headers = response.headers;
-    
-    // Get origin from request
-    const origin = request.headers.origin ? request.headers.origin[0].value : '*';
-    
-    // Add CORS headers
-    headers['access-control-allow-origin'] = [{ key: 'Access-Control-Allow-Origin', value: origin }];
-    headers['access-control-allow-methods'] = [{ key: 'Access-Control-Allow-Methods', value: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE' }];
-    headers['access-control-allow-headers'] = [{ key: 'Access-Control-Allow-Headers', value: 'Content-Type,Authorization,X-Requested-With' }];
-    headers['access-control-max-age'] = [{ key: 'Access-Control-Max-Age', value: '86400' }];
-    
-    // For OPTIONS requests, ensure 200 status
-    if (request.method === 'OPTIONS') {
-        response.status = '200';
-        response.statusDescription = 'OK';
+    access_control_allow_methods {
+      items = ["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "POST", "DELETE"]
     }
-    
-    return response;
-};
-EOF
-    filename = "index.js"
-  }
-}
 
-resource "aws_lambda_function" "cors_lambda" {
-  provider         = aws.us_east_1
-  filename         = data.archive_file.lambda_zip.output_path
-  function_name    = "cloudfront-cors-handler"
-  role             = aws_iam_role.lambda_edge.arn
-  handler          = "index.handler"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  runtime          = "nodejs20.x"
-  publish          = true
-  timeout          = 5
+    access_control_allow_origins {
+      items = ["*"]
+    }
+
+    access_control_max_age_sec = 86400
+    origin_override            = true
+  }
 }
 
 # -----------------------------
@@ -228,14 +178,11 @@ resource "aws_cloudfront_distribution" "backend_proxy" {
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "backend-origin"
     viewer_protocol_policy = "redirect-to-https"
-    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingDisabled
+
+    cache_policy_id           = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingDisabled
     origin_request_policy_id = "216adef6-5c7f-47e4-b989-5492eafa07d3" # AllViewer
 
-    lambda_function_association {
-      event_type   = "origin-response"
-      lambda_arn   = aws_lambda_function.cors_lambda.qualified_arn
-      include_body = false
-    }
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.cors_policy.id
   }
 
   restrictions {
