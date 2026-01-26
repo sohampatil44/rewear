@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "alb_assume" {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     principals {
       type        = "Federated"
-      identifiers =[module.eks.aws_iam_openid_connect_provider.eks_oidc.arn]
+      identifiers = [var.cluster_oidc_arn]
     }
     condition {
       test     = "StringEquals"
@@ -104,10 +104,10 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 
   depends_on = [
-    aws_iam_openid_connect_provider.oidc,
-    kubernetes_service_account.aws_lb_controller
-  ]
+  kubernetes_service_account.aws_lb_controller
+]
 }
+
 
 # -----------------------------
 # Dynamic ALB Lookup

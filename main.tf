@@ -97,7 +97,7 @@ module "load-balancer" {
     helm = helm
     kubernetes = kubernetes
   }
-
+  cluster_oidc_arn    = module.eks.cluster_oidc_arn
   cluster_oidc_issuer = module.eks.cluster_oidc_issuer
   cluster_cert_data   = module.eks.cluster_cert_data
 

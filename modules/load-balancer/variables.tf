@@ -23,3 +23,4 @@ variable "cluster_cert_data" {
   type        = string
   
 }
+variable "cluster_oidc_arn" {}

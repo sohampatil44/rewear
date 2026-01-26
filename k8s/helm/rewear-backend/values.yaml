@@ -33,4 +33,4 @@ affinity: {}
 alertmanager:
   webhookUrl: "https://cr6dv3ex64.execute-api.us-east-1.amazonaws.com/dev/alert"
 aws:
-  accessKeyId: ""
+  # accessKeyId: ""
