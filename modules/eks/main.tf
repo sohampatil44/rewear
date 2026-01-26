@@ -22,10 +22,10 @@ resource "aws_iam_role" "eks_cluster_role" {
   name = "${var.cluster_name}-eks-cluster-role"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = "eks.amazonaws.com" }
+      Effect    = "Allow",
+      Principal = { Service = "eks.amazonaws.com" },
       Action    = "sts:AssumeRole"
     }]
   })
@@ -48,10 +48,10 @@ resource "aws_iam_role" "eks_node_role" {
   name = "${var.cluster_name}-eks-node-role"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = "ec2.amazonaws.com" }
+      Effect    = "Allow",
+      Principal = { Service = "ec2.amazonaws.com" },
       Action    = "sts:AssumeRole"
     }]
   })
@@ -139,13 +139,9 @@ data "aws_eks_cluster_auth" "eks_cluster" {
 resource "aws_iam_openid_connect_provider" "eks_oidc" {
   url = data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer
 
-  client_id_list = [
-    "sts.amazonaws.com"
-  ]
+  client_id_list = ["sts.amazonaws.com"]
 
-  thumbprint_list = [
-    "9e99a48a9960b14926bb7f3b02e22da0afd10df6"
-  ]
+  thumbprint_list = ["9e99a48a9960b14926bb7f3b02e22da0afd10df6"]
 }
 
 ################################
@@ -155,23 +151,22 @@ resource "aws_iam_role" "cluster_autoscaler_irsa" {
   name = "${var.cluster_name}-cluster-autoscaler-irsa"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow"
-      Action = "sts:AssumeRoleWithWebIdentity"
+      Effect = "Allow",
+      Action = "sts:AssumeRoleWithWebIdentity",
       Principal = {
         Federated = aws_iam_openid_connect_provider.eks_oidc.arn
-      }
+      },
       Condition = {
         StringEquals = {
-          format("%s:sub", replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")) = "system:serviceaccount:kube-system:cluster-autoscaler",
-          format("%s:aud", replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")) = "sts.amazonaws.com"
+          "${replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:kube-system:cluster-autoscaler",
+          "${replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
         }
       }
     }]
   })
 }
-
 
 resource "aws_iam_role_policy_attachment" "cluster_autoscaler_policy_attachment" {
   role       = aws_iam_role.cluster_autoscaler_irsa.name

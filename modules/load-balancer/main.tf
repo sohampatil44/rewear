@@ -22,11 +22,12 @@ data "tls_certificate" "eks" {
   url = var.cluster_oidc_issuer
 }
 
-resource "aws_iam_openid_connect_provider" "oidc" {
-  client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
-  url             = var.cluster_oidc_issuer
-}
+# resource "aws_iam_openid_connect_provider" "oidc" {
+#   client_id_list  = ["sts.amazonaws.com"]
+#   thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
+#   url             = var.cluster_oidc_issuer
+# }
+
 
 data "aws_iam_policy_document" "alb_assume" {
   statement {
@@ -34,7 +35,7 @@ data "aws_iam_policy_document" "alb_assume" {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.oidc.arn]
+      identifiers =[module.eks.aws_iam_openid_connect_provider.eks_oidc.arn]
     }
     condition {
       test     = "StringEquals"
