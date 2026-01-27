@@ -1,9 +1,9 @@
 replicaCount: 2
 frontendUrl: "https://d1yjytxb1lac7d.cloudfront.net"
-backendUrl: ""
+backendUrl: "https://d3us1dgh3hu6i2.cloudfront.net"
 image:
   repository: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend"
-  tag: "abde0963"
+  tag: "f5808ca5"
   pullPolicy: Always
 service:
   enabled: true
