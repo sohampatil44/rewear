@@ -1,4 +1,30 @@
 ################################
+# Metric server installation using helm
+################################
+
+provider "helm" {
+  kubernetes = {
+    host = aws_eks_cluster.eks_cluster.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.eks_cluster.certificate_authority[0].data)
+    token = data.aws_eks_cluster.eks_cluster.token
+  }
+  
+}
+
+
+resource "helm_release" "metric_server" {
+  name = "metrics-server"
+  namespace = "kube-system"
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart = "metrics-server"
+
+  set {
+    name = "args[0]"
+    value = "--kubelet-insecure-tls"
+  }
+  
+}
+################################
 # EKS CLUSTER
 ################################
 resource "aws_eks_cluster" "eks_cluster" {
@@ -121,6 +147,28 @@ resource "aws_iam_policy" "cluster_autoscaler" {
   name   = "${var.cluster_name}-cluster-autoscaler-policy"
   policy = file("${path.module}/cluster-autoscaler-policy.json")
 }
+resource "helm_release" "cluster_autoscaler" {
+  name       = "cluster-autoscaler"
+  repository = "https://kubernetes.github.io/autoscaler"
+  chart      = "cluster-autoscaler"
+  namespace  = "kube-system"
+
+  set {
+    name  = "autoDiscovery.clusterName"
+    value = aws_eks_cluster.eks_cluster.name
+  }
+
+  set {
+    name  = "awsRegion"
+    value = var.aws_region
+  }
+
+  set {
+    name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = aws_iam_role.cluster_autoscaler_irsa.arn
+  }
+}
+
 
 ################################
 # EKS DATA SOURCES
@@ -171,4 +219,53 @@ resource "aws_iam_role" "cluster_autoscaler_irsa" {
 resource "aws_iam_role_policy_attachment" "cluster_autoscaler_policy_attachment" {
   role       = aws_iam_role.cluster_autoscaler_irsa.name
   policy_arn = aws_iam_policy.cluster_autoscaler.arn
+}
+
+################################
+# FLUENT BIT IRSA ROLE
+################################
+
+resource "aws_iam_role" "fluent_bit_irsa" {
+  name = "${var.cluster_name}-fluent-bit-irsa"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = "sts:AssumeRoleWithWebIdentity",
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.eks_oidc.arn
+      },
+      Condition = {
+        StringEquals = {
+          "${replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:logging:fluent-bit",
+          "${replace(data.aws_eks_cluster.eks_cluster.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+}
+
+################################
+# FLUENT BIT FIREHOSE POLICY
+################################
+resource "aws_iam_policy" "fluent_bit_firehose" {
+  name = "${var.cluster_name}-fluent-bit-firehose"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "firehose:PutRecord",
+        "firehose:PutRecordBatch"
+      ],
+      Resource = "*"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "fluent_bit_attach" {
+  role       = aws_iam_role.fluent_bit_irsa.name
+  policy_arn = aws_iam_policy.fluent_bit_firehose.arn
 }

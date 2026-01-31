@@ -75,42 +75,7 @@ custom_error_response {
     response_code = 200
     response_page_path = "/index.html"
 }
-# ordered_cache_behavior {
-#   path_pattern     = "/admin/*"
-#   target_origin_id = "alb-origin"
 
-#   allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
-#   cached_methods   = ["GET", "HEAD"]
-
-#   cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
-#   origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
-
-#   viewer_protocol_policy = "redirect-to-https"
-# }
-# ordered_cache_behavior {
-#   path_pattern     = "/items/*"
-#   target_origin_id = "alb-origin"
-
-#   allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
-#   cached_methods   = ["GET", "HEAD"]
-
-#   cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
-#   origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
-
-#   viewer_protocol_policy = "redirect-to-https"
-# }
-# ordered_cache_behavior {
-#   path_pattern     = "/swaps/*"
-#   target_origin_id = "alb-origin"
-
-#   allowed_methods  = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
-#   cached_methods   = ["GET", "HEAD"]
-
-#   cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
-#   origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer.id
-
-#   viewer_protocol_policy = "redirect-to-https"
-# }
 
 
   restrictions {
@@ -138,14 +103,14 @@ data "aws_cloudfront_origin_request_policy" "all_viewer" {
 
 
 # Get the ALB DNS of your backend Ingress (from EKS)
-data "kubernetes_ingress_v1" "backend_ingress" {
-  metadata {
-    name      = "rewear-ingress"
-    namespace = "default"
-  }
-}
+# data "kubernetes_ingress_v1" "backend_ingress" {
+#   metadata {
+#     name      = "rewear-ingress"
+#     namespace = "default"
+#   }
+# }
 
-# CloudFront distribution for backend API
+# # CloudFront distribution for backend API
 # resource "aws_cloudfront_distribution" "backend" {
 #   origin {
 #     domain_name = data.kubernetes_ingress_v1.backend_ingress.status[0].load_balancer[0].ingress[0].hostname
