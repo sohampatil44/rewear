@@ -25,7 +25,7 @@ spec:
         config:
           outputs: |
             [OUTPUT]
-                Name firehose
+                Name kinesis_firehose
                 Match *
                 region us-east-1
                 delivery_stream eks-logs-firehose
