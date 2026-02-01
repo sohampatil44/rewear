@@ -3,26 +3,24 @@ kind: Application
 metadata:
   name: fluent-bit
   namespace: argocd
-
 spec:
   project: default
-  source:  
+  source:
     repoURL: https://fluent.github.io/helm-charts
     chart: fluent-bit
     targetRevision: 0.46.8
-    helm: 
+    helm:
       values: |
         image:
-          repository: amazon/aws-for-fluent-bit
-          tag: 2.0.12
-
+          repository: public.ecr.aws/aws-observability/aws-for-fluent-bit
+          tag: v2.0.12
 
         serviceAccount:
           create: true
           name: fluent-bit
           annotations:
             eks.amazonaws.com/role-arn: arn:aws:iam::724772062958:role/rewear-eks-cluster-fluent-bit-irsa
-        
+
         config:
           outputs: |
             [OUTPUT]
@@ -35,6 +33,6 @@ spec:
     server: https://kubernetes.default.svc
     namespace: logging
   syncPolicy:
-    automated:  
+    automated:
       prune: true
       selfHeal: true
