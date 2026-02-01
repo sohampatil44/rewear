@@ -131,7 +131,12 @@ jobs:
     - name: Register cluster-autoscaler in ArgoCD
       run: |
         kubectl create namespace monitoring || true
-        kubectl apply -f k8s/argocd/cluster-autoscaler.yaml    
+        kubectl apply -f k8s/argocd/cluster-autoscaler.yaml 
+        
+    - name: Register fluent-bit in ArgoCD
+      run: |
+        kubectl create namespace monitoring || true
+        kubectl apply -f k8s/argocd/fluent-bit-application.yaml      
     
 
 

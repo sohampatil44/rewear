@@ -6,7 +6,7 @@
     # vpc_subnet_id: subnet-5ca1ab1e
     aws_secret_key: "{{ec2_secret_key}}"
     aws_access_key: "{{ec2_access_key}}"
-    instance_type: t2.micro
+    instance_type: "{{ type }}"
     security_group: default
     network:
       assign_public_ip: true
