@@ -12,6 +12,10 @@ spec:
     targetRevision: 0.46.8
     helm: 
       values: |
+        image:
+          repository: public.ecr.aws/aws-observability/aws-for-fluent-bit
+          tag: 2.31.12
+
         serviceAccount:
           create: true
           name: fluent-bit
@@ -26,14 +30,10 @@ spec:
                 region us-east-1
                 delivery_stream eks-logs-firehose
 
-
   destination:
     server: https://kubernetes.default.svc
     namespace: logging
   syncPolicy:
     automated:  
-
       prune: true
-      selfHeal: true               
-
-    
+      selfHeal: true
