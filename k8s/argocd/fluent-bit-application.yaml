@@ -13,8 +13,9 @@ spec:
     helm: 
       values: |
         image:
-          repository: public.ecr.aws/aws-observability/aws-for-fluent-bit
-          tag: 2.31.12
+          repository: amazon/aws-for-fluent-bit
+          tag: 2.0.12
+
 
         serviceAccount:
           create: true
