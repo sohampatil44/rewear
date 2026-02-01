@@ -162,7 +162,7 @@ resource "helm_release" "cluster_autoscaler" {
 
   set {
     name  = "awsRegion"
-    value = var.aws_region
+    value = "us-east-1"
   }
 
   set {
