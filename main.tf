@@ -145,3 +145,10 @@ module "uploads" {
   source = "./modules/uploads"
     
 }
+# ----------------------------
+# FIREHOSE-LOGS MODULE
+# ----------------------------
+module "uploads" {
+  source = "./modules/firehose-logs"
+    
+}

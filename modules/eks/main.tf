@@ -271,3 +271,69 @@ resource "aws_iam_role_policy_attachment" "fluent_bit_attach" {
   role       = aws_iam_role.fluent_bit_irsa.name
   policy_arn = aws_iam_policy.fluent_bit_firehose.arn
 }
+################################
+# S3 BUCKET FOR EKS LOGS
+################################
+resource "aws_s3_bucket" "eks_logs" {
+  bucket = "${var.cluster_name}-eks-logs"
+}
+
+################################
+# FIREHOSE IAM ROLE
+################################
+resource "aws_iam_role" "firehose_role" {
+  name = "${var.cluster_name}-firehose-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = { Service = "firehose.amazonaws.com" }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "firehose_s3_policy" {
+  name = "firehose-s3-policy"
+  role = aws_iam_role.firehose_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "s3:AbortMultipartUpload",
+        "s3:GetBucketLocation",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:ListBucketMultipartUploads",
+        "s3:PutObject"
+      ]
+      Resource = [
+        aws_s3_bucket.eks_logs.arn,
+        "${aws_s3_bucket.eks_logs.arn}/*"
+      ]
+    }]
+  })
+}
+
+################################
+# KINESIS FIREHOSE DELIVERY STREAM
+################################
+resource "aws_kinesis_firehose_delivery_stream" "eks_logs" {
+  name        = "eks-logs-firehose"
+  destination = "extended_s3"
+
+  extended_s3_configuration {
+    role_arn   = aws_iam_role.firehose_role.arn
+    bucket_arn = aws_s3_bucket.eks_logs.arn
+
+    prefix                  = "eks-logs/!{timestamp:yyyy/MM/dd}/"
+    error_output_prefix     = "eks-logs-errors/!{firehose:error-output-type}/!{timestamp:yyyy/MM/dd}/"
+    compression_format      = "GZIP"
+
+    buffering_size     = 5
+    buffering_interval = 300
+  }
+}
