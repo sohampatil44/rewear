@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: fluent-bit
-  namespace: argpcd
+  namespace: argocd
 
 spec:
   project: default
@@ -19,12 +19,13 @@ spec:
             eks.amazonaws.com/role-arn: arn:aws:iam::724772062958:role/rewear-eks-cluster-fluent-bit-irsa
         
         config:
-         outputs: |
-           [OUTPUT]
-               Name kinesis_firehose
-               Match *
-               region us-east-1
-               delivery_stream eks-logs-firehose
+          outputs: |
+            [OUTPUT]
+                Name firehose
+                Match *
+                region us-east-1
+                delivery_stream eks-logs-firehose
+
 
   destination:
     server: https://kubernetes.default.svc
