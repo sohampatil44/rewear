@@ -135,7 +135,7 @@ jobs:
         
     - name: Register fluent-bit in ArgoCD
       run: |
-        kubectl create namespace monitoring || true
+        kubectl create namespace logging || true
         kubectl apply -f k8s/argocd/fluent-bit-application.yaml      
     
 
