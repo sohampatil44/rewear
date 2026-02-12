@@ -23,6 +23,27 @@ app.use((req, res, next) => {
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics();
 
+// --------------------- HTTP METRICS --------------------------  
+
+const httpRequestDuration= new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.1, 0.3, 0.5, 1,1.5,2,3, 5]
+})
+app.use((req,res,next)=>{
+  const end = httpRequestDuration.startTimer();
+
+  res.on("finish",()=>{
+    end({
+      method:req.method,
+      route:req.route?.path || req.path,
+      status_code:res.statusCode
+    })
+  })
+  next();
+}) 
+
 /* -------------------- CORS -------------------- */
 const allowedOrigins = [
   process.env.FRONTEND_URL,

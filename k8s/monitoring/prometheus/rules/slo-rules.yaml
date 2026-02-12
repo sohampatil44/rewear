@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: prometheus-rules
+metadata:
+  name: rewear-backend-slo
+  namespace: monitoring
+spec: 
+  groups:
+    - name: rewear-backend-slo
+      rules:
+
+
+        - record: rewear:http_requests:total
+          expr: |
+            sum(rate(http_requests_total[5m]))
+
+
+        - record: rewear:http_requests:errors
+          expr: |    
+            sum(rate(http_requests_total{status=~"5.."}[5m])) 
+
+        - record: rewear:http_requests:error_ratio
+          expr: |
+            rewear:http_requests:errors / rewear:http_requests:total
