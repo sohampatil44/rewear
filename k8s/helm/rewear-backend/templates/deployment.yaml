@@ -8,15 +8,15 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount | default 2 }}
   strategy:
-  canary:
-    steps:
-      - setWeight: 10
-      - pause: { duration: 60 }
-      - setWeight: 30
-      - pause: { duration: 60 }
-      - setWeight: 60
-      - pause: { duration: 60 }
-      - setWeight: 100
+    canary:
+      steps:
+        - setWeight: 10
+        - pause: { duration: 60 }
+        - setWeight: 30
+        - pause: { duration: 60 }
+        - setWeight: 60
+        - pause: { duration: 60 }
+        - setWeight: 100
 
   selector:
     matchLabels:

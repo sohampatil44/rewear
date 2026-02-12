@@ -102,7 +102,7 @@ data "aws_cloudfront_origin_request_policy" "all_viewer" {
 
 
 
-# Get the ALB DNS of your backend Ingress (from EKS)
+# # Get the ALB DNS of your backend Ingress (from EKS)
 # data "kubernetes_ingress_v1" "backend_ingress" {
 #   metadata {
 #     name      = "rewear-ingress"
