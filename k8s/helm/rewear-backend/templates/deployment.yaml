@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: rewear-backend
   namespace: default
@@ -7,6 +7,17 @@ metadata:
     app: rewear-backend
 spec:
   replicas: {{ .Values.replicaCount | default 2 }}
+  strategy:
+  canary:
+    steps:
+      - setWeight: 10
+      - pause: { duration: 60 }
+      - setWeight: 30
+      - pause: { duration: 60 }
+      - setWeight: 60
+      - pause: { duration: 60 }
+      - setWeight: 100
+
   selector:
     matchLabels:
       app: rewear-backend

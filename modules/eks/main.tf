@@ -11,6 +11,22 @@ provider "helm" {
     token = data.aws_eks_cluster_auth.eks_cluster.token
   }
 }
+################################
+# ARGO ROLLOUTS INSTALLATION
+################################
+
+resource "helm_release" "argo_rollouts" {
+  name       = "argo-rollouts"
+  namespace  = "argo-rollouts"
+  create_namespace = true
+
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argo-rollouts"
+
+  depends_on = [
+    aws_eks_cluster.eks_cluster
+  ]
+}
 
 
 
