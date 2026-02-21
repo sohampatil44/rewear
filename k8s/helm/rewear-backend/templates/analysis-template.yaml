@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: error-rate-check
+  namespace: default
+spec:
+  metrics:
+    - name: error-rate
+      interval: 30s
+      count: 3
+      successCondition: result < 0.02
+      failureCondition: result >= 0.02  
+      provider:
+        prometheus:
+          address: http://prometheus-server.monitoring.svc.cluster.local:9090
+          query: |
+            rewear:http_requests:error_ratio 
+            > avg_over_time(rewear:http_requests:error_ratio[15m]) * 2
