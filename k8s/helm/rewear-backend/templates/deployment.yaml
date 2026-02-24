@@ -8,23 +8,16 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount | default 2 }}
   strategy:
-    canary:
-      steps:
-        - setWeight: 10
-        - analysis:
-            templates:
-              - templateName: error-rate-check
-        
-        - setWeight: 30
-        - analysis:
-            templates:
-              - templateName: error-rate-check
-        - setWeight: 60
-        - analysis:
-            templates:
-              - templateName: error-rate-check
+  canary:
+    steps:
+      - setWeight: 10
+      - pause: { duration: 60 }
+      - setWeight: 30
+      - pause: { duration: 60 }
+      - setWeight: 60
+      - pause: { duration: 60 }
+      - setWeight: 100
 
-        - setWeight: 100
         
 
   selector:
