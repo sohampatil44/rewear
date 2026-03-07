@@ -16,3 +16,4 @@ spec:
           query: |
             rewear:http_requests:error_ratio 
             > avg_over_time(rewear:http_requests:error_ratio[15m]) * 2
+      
