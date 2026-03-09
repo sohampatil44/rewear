@@ -160,7 +160,7 @@ resource "aws_eks_node_group" "ec2_workers" {
 
 ################################
 # CLUSTER AUTOSCALER SERVICE ACCOUNT
-resource "'aws_security_group_rule'" "'allow_nodeport'"{
+resource "aws_security_group_rule" "allow_nodeport"{
   type              = "ingress"
   from_port         = 30000
   to_port           = 32767
