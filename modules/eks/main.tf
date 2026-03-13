@@ -363,4 +363,4 @@ resource "aws_kinesis_firehose_delivery_stream" "eks_logs" {
     buffering_size     = 5
     buffering_interval = 300
   }
-}
+} 

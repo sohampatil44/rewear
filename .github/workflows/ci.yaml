@@ -154,7 +154,7 @@ jobs:
       id: tag
       run: echo "tag=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
 
-    - name: Login to ECR (Docker)
+    - name: Login to ECR ( )
       run: |
         ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
         REPO_URL="${ACCOUNT_ID}.dkr.ecr.${{ env.REGION }}.amazonaws.com/${{ env.ECR_REPO_NAME }}"
