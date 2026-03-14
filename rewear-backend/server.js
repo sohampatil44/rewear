@@ -82,9 +82,9 @@ app.use((req,res,next)=>{
   res.on("finish",()=>{
 
     const labels = {
-      method:req.method,
-      route:req.route?.path || req.path,
-      status_code:res.statusCode
+      method: req.method,
+      route: req.originalUrl,
+      status_code: res.statusCode
     };
 
     httpRequestsTotal.inc(labels);
