@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import client from "prom-client";
+import * as client from "prom-client";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
 import itemRoutes from "./routes/items.js";
@@ -82,9 +82,9 @@ app.use((req,res,next)=>{
   res.on("finish",()=>{
 
     const labels = {
-      method: req.method,
-      route: req.originalUrl,
-      status_code: res.statusCode
+      method:req.method,
+      route:req.route?.path || req.path,
+      status_code:res.statusCode
     };
 
     httpRequestsTotal.inc(labels);
