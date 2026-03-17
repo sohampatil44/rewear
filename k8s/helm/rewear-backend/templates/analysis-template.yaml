@@ -10,14 +10,11 @@ spec:
       count: 5
       failureLimit: 3
       successCondition: result[0] <= 0.02
-      # failureCondition: result >= 0.02  
       provider:
         prometheus:
-          address: http://prometheus-server.monitoring.svc.cluster.local:9090
+          address: http://prometheus-service.monitoring.svc.cluster.local:9090
           query: |
-            rewear:http_requests:error_ratio 
-            # > avg_over_time(rewear:http_requests:error_ratio[15m]) * 2
-      
+            rewear:http_requests:error_ratio
 
     - name: latency-p95
       interval: 30s
@@ -26,6 +23,6 @@ spec:
       successCondition: result[0] <= 1.0
       provider:
         prometheus:
+          address: http://prometheus-service.monitoring.svc.cluster.local:9090
           query: |
             histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
-            address: http://prometheus-server.monitoring.svc.cluster.local:9090
