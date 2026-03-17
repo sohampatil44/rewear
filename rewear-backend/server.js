@@ -23,14 +23,18 @@ app.use((req, res, next) => {
 const collectDefaultMetrics = client.collectDefaultMetrics;
 collectDefaultMetrics();
 
-// --------------------- HTTP METRICS --------------------------  
-
-const httpRequestDuration= new client.Histogram({
+const httpRequestDuration = new client.Histogram({
   name: "http_request_duration_seconds",
   help: "Duration of HTTP requests in seconds",
   labelNames: ["method", "route", "status_code"],
-  buckets: [0.1, 0.3, 0.5, 1,1.5,2,3, 5]
-})
+  buckets: [0.1, 0.3, 0.5, 1, 1.5, 2, 3, 5]
+});
+
+const httpRequestsTotal = new client.Counter({
+  name: "http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status_code"]
+});
 
 /* -------------------- CORS -------------------- */
 const allowedOrigins = [
@@ -43,7 +47,6 @@ const allowedOrigins = [
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -66,33 +69,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
-const httpRequestsTotal = new client.Counter({
-  name: "http_requests_total",
-  help: "Total number of HTTP requests",
-  labelNames: ["method", "route", "status_code"]
-});
-
-
 /* -------------------- Middlewares -------------------- */
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-app.use((req,res,next)=>{
-  const end = httpRequestDuration.startTimer();
-
-  res.on("finish",()=>{
-
-    const labels = {
-      method:req.method,
-      route:req.route?.path || req.path,
-      status_code:res.statusCode
-    };
-
-    httpRequestsTotal.inc(labels);
-    end(labels);
-  });
-
-  next();
-});
 
 /* -------------------- Routes -------------------- */
 app.use("/auth", authRoutes);
@@ -109,12 +88,46 @@ app.get("/health", (req, res) => {
   });
 });
 
-/* -------------------- Metrics Endpoint -------------------- */
-app.get("/metrics", async (req, res) => {
-  res.set("Content-Type", client.register.contentType);
-  res.end(await client.register.metrics());
+/* -------------------- HTTP Metrics Middleware -------------------- */
+// Placed AFTER routes so req.route is populated
+app.use((req, res, next) => {
+  const end = httpRequestDuration.startTimer();
+
+  res.on("finish", () => {
+    try {
+      const route = req.route?.path
+        ? req.baseUrl + req.route.path
+        : req.path;
+
+      const labels = {
+        method: req.method,
+        route: route,
+        status_code: String(res.statusCode)
+      };
+
+      httpRequestsTotal.inc(labels);
+      end(labels);
+
+      console.log(`📊 Metric recorded | method=${labels.method} route=${labels.route} status=${labels.status_code}`);
+    } catch (err) {
+      console.error(`❌ Failed to record metric | path=${req.path} error=${err.message}`);
+    }
+  });
+
+  next();
 });
 
+/* -------------------- Metrics Endpoint -------------------- */
+app.get("/metrics", async (req, res) => {
+  try {
+    res.set("Content-Type", client.register.contentType);
+    res.end(await client.register.metrics());
+    console.log("📈 Metrics scraped successfully");
+  } catch (err) {
+    console.error(`❌ Failed to serve metrics | error=${err.message}`);
+    res.status(500).end();
+  }
+});
 
 /* -------------------- MongoDB -------------------- */
 mongoose
@@ -123,9 +136,7 @@ mongoose
     useUnifiedTopology: true
   })
   .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) =>
-    console.error("❌ MongoDB connection error:", err)
-  );
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 /* -------------------- Server -------------------- */
 const PORT = process.env.PORT || 5001;
