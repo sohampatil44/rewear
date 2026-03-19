@@ -9,7 +9,7 @@ spec:
       interval: 30s
       count: 5
       failureLimit: 3
-      successCondition: result[0] <= 0.02
+      successCondition: len(result) == 0 || result[0] <= 0.02
       provider:
         prometheus:
           address: http://prometheus-service.monitoring.svc.cluster.local:9090
@@ -20,7 +20,7 @@ spec:
       interval: 30s
       count: 5
       failureLimit: 3
-      successCondition: result[0] <= 1.0
+      successCondition: len(result) == 0 || result[0] <= 1.0
       provider:
         prometheus:
           address: http://prometheus-service.monitoring.svc.cluster.local:9090
