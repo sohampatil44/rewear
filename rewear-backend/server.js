@@ -73,23 +73,8 @@ app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-/* -------------------- Routes -------------------- */
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/items", itemRoutes);
-app.use("/swaps", swapRoutes);
-app.use("/admin", adminRoutes);
-
-/* -------------------- Health Check -------------------- */
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "ok",
-    timestamp: new Date().toISOString()
-  });
-});
-
 /* -------------------- HTTP Metrics Middleware -------------------- */
-// Placed AFTER routes so req.route is populated
+// MUST be before routes and health check
 app.use((req, res, next) => {
   const end = httpRequestDuration.startTimer();
 
@@ -115,6 +100,21 @@ app.use((req, res, next) => {
   });
 
   next();
+});
+
+/* -------------------- Routes -------------------- */
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/items", itemRoutes);
+app.use("/swaps", swapRoutes);
+app.use("/admin", adminRoutes);
+
+/* -------------------- Health Check -------------------- */
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString()
+  });
 });
 
 /* -------------------- Metrics Endpoint -------------------- */
