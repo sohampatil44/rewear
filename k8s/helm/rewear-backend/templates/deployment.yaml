@@ -11,21 +11,14 @@ spec:
     canary:
       steps:
         - setWeight: 10
-        - analysis:
-            templates:
-              - templateName: error-rate-check
-
+        - pause: { duration: 60 }
         - setWeight: 30
-        - analysis:
-            templates:
-              - templateName: error-rate-check
-
+        - pause: { duration: 60 }
         - setWeight: 60
-        - analysis:
-            templates:
-              - templateName: error-rate-check
+        - pause: { duration: 60 }
+        - setWeight: 100 
 
-        - setWeight: 100
+  
 
         
 
