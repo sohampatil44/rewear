@@ -11,34 +11,31 @@ spec:
     canary:
       steps:
         - setWeight: 10
-        - pause: {}
+          pause: {}
         - setWeight: 30
-        - pause: {}
+          pause: {}
         - setWeight: 60
-        - pause: {}
+          pause: {}
         - setWeight: 100
-
   selector:
     matchLabels:
       app: rewear-backend
-
   template:
     metadata:
       labels:
         app: rewear-backend
     spec:
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{- toYaml .Values.nodeSelector | nindent 8 }}
-
+{{ toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: rewear-backend
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
-
           ports:
             - containerPort: {{ .Values.containerPort | default 5001 }}
               name: http
-
           env:
             - name: FRONTEND_URL
               value: "{{ .Values.frontendUrl }}"
@@ -58,20 +55,31 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.jwtSecretName }}
                   key: {{ .Values.jwtSecretKey }}
-
+            - name: AWS_S3_BUCKET
+              value: "rewear-frontend-bucket"
+            - name: AWS_UPLOADS_BUCKET
+              value: "rewear-uploads-bucket"
+            - name: AWS_REGION
+              value: "us-east-1"
           livenessProbe:
             httpGet:
               path: /health
               port: 5001
             initialDelaySeconds: 20
             periodSeconds: 10
-
           readinessProbe:
             httpGet:
               path: /health
               port: 5001
             initialDelaySeconds: 10
             periodSeconds: 5
-
           resources:
-{{- toYaml .Values.resources | nindent 12 }}
+{{- toYaml .Values.resources | nindent 10 }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | nindent 8 }}
+      {{- end }}
