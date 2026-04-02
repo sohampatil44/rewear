@@ -16,6 +16,7 @@ mongodb:
   mongoUser: "admin"
 env:
   NODE_ENV: "production"
+  
 resources:
   requests:
     cpu: 200m
