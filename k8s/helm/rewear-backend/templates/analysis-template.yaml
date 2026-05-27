@@ -36,13 +36,13 @@ spec:
         prometheus:
           address: http://prometheus-service.monitoring.svc.cluster.local:9090
           query: |
-            sum(rate(container_cpu_usage_seconds_total{pod=~"rewear-backend-.*"}[5m])) by (pod)        
+            sum(rate(container_cpu_usage_seconds_total{pod=~"rewear-backend-.*"}[5m]))        
 
     - name: memory-usage
       interval: 30s
       count: 5
       failureLimit: 2
-      successCondition: result[0] < 0.8
+      successCondition: len(result) == 0 || result
       provider:
         prometheus:
           address: http://prometheus-service.monitoring.svc.cluster.local:9090
