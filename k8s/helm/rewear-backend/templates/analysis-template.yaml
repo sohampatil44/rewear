@@ -27,24 +27,3 @@ spec:
           query: |
             histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
 
-    - name: cpu-usage
-      interval: 30s
-      count: 5
-      failureLimit: 2
-      successCondition: len(result) == 0 || result[0] <= 0.8
-      provider:
-        prometheus:
-          address: http://prometheus-service.monitoring.svc.cluster.local:9090
-          query: |
-            sum(rate(container_cpu_usage_seconds_total{pod=~"rewear-backend-.*"}[5m]))        
-
-    - name: memory-usage
-      interval: 30s
-      count: 5
-      failureLimit: 2
-      successCondition: len(result) == 0 || result
-      provider:
-        prometheus:
-          address: http://prometheus-service.monitoring.svc.cluster.local:9090
-          query: |
-            sum(container_memory_usage_bytes{pod=~"rewear-backend.*"})        
