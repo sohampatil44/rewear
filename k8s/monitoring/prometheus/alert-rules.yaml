@@ -54,3 +54,12 @@ data:
           annotations:
             summary: "Node {{ $labels.node }} NotReady"
             description: "Kubernetes node is not Ready."
+
+  recording.rules: |
+    groups:
+      - name: rewear-recording-rules
+        rules:
+        - record: rewear:http_requests:error_ratio
+          expr: |
+            sum(rate(http_requests_total{status_code=~"4..|5.."}[1m]))
+            / sum(rate(http_requests_total[1m]))
