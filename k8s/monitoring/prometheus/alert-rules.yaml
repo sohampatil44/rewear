@@ -6,7 +6,7 @@ metadata:
   labels:
     role: prometheus-rules
 data:
-  alert.rules: |
+  alert-rules.yaml: |
     groups:
       - name: k8s-resources
         rules:
@@ -15,7 +15,7 @@ data:
         - alert: PodHighCpu
           expr: |
             sum(rate(container_cpu_usage_seconds_total{container!=""}[2m])) by (pod, namespace) 
-            / sum(kube_pod_container_resource_limits_cpu_cores{container!=""}) by (pod, namespace)
+            / sum(kube_pod_container_resource_limits{resource="cpu", container!=""}) by (pod, namespace)
             > 0.8
           for: 2m
           labels:
@@ -26,9 +26,10 @@ data:
 
         # High memory usage on any pod
         - alert: PodHighMemory
-          expr: sum(container_memory_usage_bytes{container!=""}) by (pod, namespace)
-                / sum(kube_pod_container_resource_limits_memory_bytes{container!=""}) by (pod, namespace)
-                > 0.9
+          expr: |
+            sum(container_memory_usage_bytes{container!=""}) by (pod, namespace)
+            / sum(kube_pod_container_resource_limits{resource="memory", container!=""}) by (pod, namespace)
+            > 0.9
           for: 2m
           labels:
             severity: warning
@@ -55,7 +56,7 @@ data:
             summary: "Node {{ $labels.node }} NotReady"
             description: "Kubernetes node is not Ready."
 
-  recording.rules: |
+  recording-rules.yaml: |
     groups:
       - name: rewear-recording-rules
         rules:
