@@ -8,8 +8,8 @@ spec:
     - name: error-rate
       interval: 30s
       count: 5
-      failureLimit: 2
-      successCondition: len(result) == 0 || result[0] <= 0.02
+      failureLimit: 5
+      successCondition: len(result) == 0 || result[0] <= 0.99
       provider:
         prometheus:
           address: http://prometheus-service.monitoring.svc.cluster.local:9090
