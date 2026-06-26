@@ -1,9 +1,9 @@
 replicaCount: 2
-frontendUrl: "https://d2rsjvjarokp4.cloudfront.net"
-backendUrl: "https://d2oqha16k9chh.cloudfront.net"
+frontendUrl: "https://d1w156p27rrh7k.cloudfront.net"
+backendUrl: ""
 image:
   repository: "724772062958.dkr.ecr.us-east-1.amazonaws.com/rewear-backend"
-  tag: "e8716d69"
+  tag: "2c36ea9d"
   pullPolicy: Always
 service:
   enabled: true
@@ -30,6 +30,6 @@ nodeSelector:
 tolerations: []
 affinity: {}
 alertmanager:
-  webhookUrl: "https://52axsxmdcc.execute-api.us-east-1.amazonaws.com/dev/alert"
+  webhookUrl: "https://9p8hipzdoc.execute-api.us-east-1.amazonaws.com/dev/alert"
 aws:
 # accessKeyId: ""
